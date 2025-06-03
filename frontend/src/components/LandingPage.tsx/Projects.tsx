@@ -19,7 +19,7 @@ const projects = [
         status: "In development",
         codeUrl: "https://github.com/Klein-Twins/Survivor-Fantasy-League",
         demoUrl: "",
-        screenshot: "/budgetbuddy-screenshot.png",
+        screenshot: "/sfl.jpg",
     },
     {
         title: "ChoreMate",
