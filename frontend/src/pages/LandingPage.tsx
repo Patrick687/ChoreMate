@@ -8,14 +8,17 @@ import Footer from "../components/LandingPage/Footer";
 
 const LandingPage: React.FC = () => {
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
-            <Header />
-            <HeroSection />
-            <FeaturesSection />
-            <HowItWorksSection />
-            <CallToActionSection />
-            <Footer />
-        </div>
+        <>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
+                <Header />
+                <HeroSection />
+                <FeaturesSection />
+                <HowItWorksSection />
+                <CallToActionSection />
+                <Footer />
+            </div>
+        </>
+
     );
 };
 export default LandingPage;

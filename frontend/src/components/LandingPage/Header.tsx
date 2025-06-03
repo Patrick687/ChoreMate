@@ -1,8 +1,10 @@
-import type React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { openModal } from "../../store/modal";
 
-export const Header: React.FC = () => {
+const Header: React.FC = () => {
     const [dark, setDark] = useState(false);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (dark) {
@@ -11,7 +13,6 @@ export const Header: React.FC = () => {
             document.documentElement.classList.remove("dark");
         }
     }, [dark]);
-
 
     return (
         <header className="flex flex-col md:flex-row items-center justify-between px-4 md:px-6 py-4 bg-white dark:bg-gray-800 shadow">
@@ -29,10 +30,18 @@ export const Header: React.FC = () => {
                 >
                     How It Works
                 </a>
-                <a href="#login" className="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+                <a
+                    href="#login"
+                    onClick={e => { e.preventDefault(); dispatch(openModal("login")); }}
+                    className="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium"
+                >
                     Login
                 </a>
-                <a href="#signup" className="bg-indigo-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-700 transition">
+                <a
+                    href="#signup"
+                    onClick={e => { e.preventDefault(); dispatch(openModal("signup")); }}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-700 transition"
+                >
                     Sign Up
                 </a>
                 <button
