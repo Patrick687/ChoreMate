@@ -4,9 +4,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
+    "start": "ts-node src/index.ts",
     "testDbConnection": "npx ts-node src/config/db.ts",
     "seedData": "ts-node src/data/seed.ts",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config ./src/config/codegen.ts"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.6",
+    "@graphql-codegen/client-preset": "4.8.1",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.18",
     "@types/jsonwebtoken": "^9.0.9",
@@ -38,7 +40,6 @@
     "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "@graphql-codegen/client-preset": "4.8.1"
+    "typescript": "^5.8.3"
   }
 }

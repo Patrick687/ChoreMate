@@ -21,10 +21,20 @@ export type AuthPayload = {
   user: User;
 };
 
+export type CreateGroupInput = {
+  createdByUserId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type DeleteGroupInput = {
+  id: Scalars['ID']['input'];
+};
+
 export type Group = {
   __typename?: 'Group';
   createdAt: Scalars['Date']['output'];
   createdBy: User;
+  groupMembers: Array<User>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
 };
@@ -40,12 +50,12 @@ export type Mutation = {
 
 
 export type MutationCreateGroupArgs = {
-  name: Scalars['String']['input'];
+  args?: InputMaybe<CreateGroupInput>;
 };
 
 
 export type MutationDeleteGroupArgs = {
-  id: Scalars['ID']['input'];
+  args?: InputMaybe<DeleteGroupInput>;
 };
 
 
@@ -65,14 +75,13 @@ export type MutationSignupArgs = {
 
 
 export type MutationUpdateGroupArgs = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
+  args?: InputMaybe<UpdateGroupInput>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  group?: Maybe<Group>;
-  groups?: Maybe<Array<Group>>;
+  group: Group;
+  groups: Array<Group>;
   me?: Maybe<User>;
 };
 
@@ -83,6 +92,12 @@ export type QueryGroupArgs = {
 
 
 export type QueryGroupsArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+export type UpdateGroupInput = {
+  groupId: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['ID']['input'];
 };
 

@@ -1,8 +1,9 @@
 import { UUID } from "crypto";
-import { USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
+import { USER_TABLE_NAME, UserModel, UserModelAttributes } from "./UserModel";
 import { sequelize } from "../config/db";
 import { DataTypes, Model, Optional } from "sequelize";
-import { BadRequestError } from "../utils/error/customErrors";
+import { BadRequestError, NotFoundError } from "../utils/error/customErrors";
+import validator from "validator";
 
 export interface GroupsModelAttributes {
     id: UUID;
@@ -56,7 +57,15 @@ export const GroupModel = Group.init(
     {
         sequelize, // This is the connection instance
         modelName: 'Group',
-        tableName: 'GRP_GROUP'
+        tableName: 'GRP_GROUP',
+        hooks: {
+            beforeCreate: async (group: GroupsModelCreationAttributes) => {
+                const userDb = await UserModel.findByPk(group.createdBy);
+                if (!userDb) {
+                    throw new NotFoundError(`User with ID ${group.createdBy} not found`);
+                }
+            }
+        }
     }
 );
 
@@ -74,3 +83,24 @@ function validateGroupName(value: string) {
         throw new BadRequestError('Group name can only contain alphanumeric characters and spaces');
     }
 }
+
+function validateCreatedByUserId(createdBy: string) {
+    if (!createdBy) {
+        throw new BadRequestError('Created by user ID is required');
+    }
+    if (!validator.isUUID(createdBy)) {
+        throw new BadRequestError('Created by user ID must be a valid UUID');
+    }
+}
+
+export const groupModelCreationAttributesValidator = (args: GroupsModelCreationAttributes): GroupsModelCreationAttributes => {
+    validateGroupName(args.name);
+    validateCreatedByUserId(args.createdBy);
+
+    return {
+        name: args.name,
+        createdBy: args.createdBy as UUID,
+    };
+}
+
+

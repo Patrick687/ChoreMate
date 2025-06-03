@@ -1,11 +1,11 @@
-
+import path from "path";
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "./src/schema/**/*.graphql",
+  schema: path.join(__dirname, "../schema/**/*.graphql"),
   generates: {
-    "./src/generated/graphql-types.ts": {
+    [path.join(__dirname, "../generated/graphql-types.ts")]: {
       plugins: ["typescript"]
     }
   }

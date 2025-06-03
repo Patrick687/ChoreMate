@@ -5,15 +5,29 @@ type Group {
   name: String!
   createdBy: User!
   createdAt: Date!
+  groupMembers: [User!]!
 }
 
 type Mutation {
-  createGroup(name: String!): Group!
-  updateGroup(id: ID!, name: String!): Group!
-  deleteGroup(id: ID!): Boolean!
+  createGroup(args: CreateGroupInput): Group!
+  updateGroup(args: UpdateGroupInput): Group!
+  deleteGroup(args: DeleteGroupInput): Boolean!
+}
+
+input CreateGroupInput {
+  name: String!
+  createdByUserId: ID!
+}
+input UpdateGroupInput {
+  groupId: ID!
+  userId: ID!
+  name: String
+}
+input DeleteGroupInput {
+  id: ID!
 }
 
 type Query {
-  groups(userId: ID!): [Group!]
-  group(id: ID!): Group
+  groups(userId: ID!): [Group!]!
+  group(id: ID!): Group!
 }

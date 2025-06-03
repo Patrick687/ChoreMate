@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 import { USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
-import { Chore, CHORE_TABLE_NAME, ChoreModelAttributes } from "./ChoresModel";
+import { CHORE_TABLE_NAME, ChoreModelAttributes } from "./ChoresModel";
 import { Model } from "sequelize";
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
