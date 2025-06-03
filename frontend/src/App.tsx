@@ -5,6 +5,8 @@ import Modal from './components/ui/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from './store/store';
 import { closeModal } from './store/modal';
+import SignupForm from './components/auth/SignupForm';
+import LoginForm from './components/auth/LoginForm';
 
 function App() {
   const isLoggedIn = false;
@@ -24,7 +26,7 @@ function App() {
         onClose={() => dispatch(closeModal())}
         title={mode === "signup" ? "Sign Up" : mode === "login" ? "Login" : ""}
       >
-        {mode === "signup" ? <p>Signup</p> : mode === "login" ? <p>Login</p> : null}
+        {mode === "signup" ? <SignupForm /> : mode === "login" ? <LoginForm /> : null}
       </Modal>
     </>
   );
