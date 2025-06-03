@@ -10,7 +10,7 @@ type Chore {
 
 type ChoreMutation {
   createChore(args: CreateChoreInput): Chore!
-  updateChore(args: UpdateChoreInput): Chore!
+  updateChoreInfo(args: UpdateChoreInfoInput): Chore!
   deleteChore(args: DeleteChoreInput): Boolean!
 }
 
@@ -21,12 +21,11 @@ input CreateChoreInput {
   createdByUserId: ID!
   isRecurring: Boolean!
 }
-input UpdateChoreInput {
+input UpdateChoreInfoInput {
   choreId: ID!
   userId: ID!
   title: String
   description: String
-  isRecurring: Boolean
 }
 input DeleteChoreInput {
   id: ID!

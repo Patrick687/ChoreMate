@@ -36,7 +36,7 @@ export type ChoreMutation = {
   __typename?: 'ChoreMutation';
   createChore: Chore;
   deleteChore: Scalars['Boolean']['output'];
-  updateChore: Chore;
+  updateChoreInfo: Chore;
 };
 
 
@@ -50,8 +50,8 @@ export type ChoreMutationDeleteChoreArgs = {
 };
 
 
-export type ChoreMutationUpdateChoreArgs = {
-  args?: InputMaybe<UpdateChoreInput>;
+export type ChoreMutationUpdateChoreInfoArgs = {
+  args?: InputMaybe<UpdateChoreInfoInput>;
 };
 
 export type CreateChoreInput = {
@@ -153,10 +153,9 @@ export type QueryGroupsArgs = {
   userId: Scalars['ID']['input'];
 };
 
-export type UpdateChoreInput = {
+export type UpdateChoreInfoInput = {
   choreId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  isRecurring?: InputMaybe<Scalars['Boolean']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['ID']['input'];
 };
