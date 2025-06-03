@@ -1,0 +1,19 @@
+scalar Date
+
+type Group {
+  id: ID!
+  name: String!
+  createdBy: User!
+  createdAt: Date!
+}
+
+type Mutation {
+  createGroup(name: String!): Group!
+  updateGroup(id: ID!, name: String!): Group!
+  deleteGroup(id: ID!): Boolean!
+}
+
+type Query {
+  groups(userId: ID!): [Group!]
+  group(id: ID!): Group
+}
