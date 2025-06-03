@@ -1,0 +1,39 @@
+type Chore {
+  id: ID!
+  title: String!
+  description: String
+  group: Group!
+  createdBy: User!
+  createdAt: Date!
+  isRecurring: Boolean!
+}
+
+type ChoreMutation {
+  createChore(args: CreateChoreInput): Chore!
+  updateChore(args: UpdateChoreInput): Chore!
+  deleteChore(args: DeleteChoreInput): Boolean!
+}
+
+input CreateChoreInput {
+  title: String!
+  description: String
+  groupId: ID!
+  createdByUserId: ID!
+  isRecurring: Boolean!
+}
+input UpdateChoreInput {
+  choreId: ID!
+  userId: ID!
+  title: String
+  description: String
+  isRecurring: Boolean
+}
+input DeleteChoreInput {
+  id: ID!
+  userId: ID!
+}
+
+type Query {
+  chores(groupId: ID!): [Chore!]!
+  chore(id: ID!): Chore!
+}

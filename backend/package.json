@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "ts-node src/index.ts",
+    "debug": "ts-node src/index.ts",
     "start": "ts-node src/index.ts",
-    "testDbConnection": "npx ts-node src/config/db.ts",
+    "testDbConnection": "ts-node src/config/db.ts",
     "seedData": "ts-node src/data/seed.ts",
     "codegen": "graphql-codegen --config ./src/config/codegen.ts"
   },
@@ -16,7 +17,6 @@
   "dependencies": {
     "@graphql-tools/load-files": "^7.0.1",
     "@graphql-tools/merge": "^9.0.24",
-    "@types/express": "^4.17.14",
     "apollo-server-express": "^3.13.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -35,11 +35,15 @@
     "@graphql-codegen/client-preset": "4.8.1",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.18",
+    "@types/express": "^4.17.22",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.29",
     "@types/uuid": "^10.0.0",
-    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "@types/express": "^4.17.22",
+    "@types/express-serve-static-core": "^4.17.37"
   }
 }

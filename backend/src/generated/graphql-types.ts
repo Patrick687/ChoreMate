@@ -21,9 +21,55 @@ export type AuthPayload = {
   user: User;
 };
 
+export type Chore = {
+  __typename?: 'Chore';
+  createdAt: Scalars['Date']['output'];
+  createdBy: User;
+  description?: Maybe<Scalars['String']['output']>;
+  group: Group;
+  id: Scalars['ID']['output'];
+  isRecurring: Scalars['Boolean']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type ChoreMutation = {
+  __typename?: 'ChoreMutation';
+  createChore: Chore;
+  deleteChore: Scalars['Boolean']['output'];
+  updateChore: Chore;
+};
+
+
+export type ChoreMutationCreateChoreArgs = {
+  args?: InputMaybe<CreateChoreInput>;
+};
+
+
+export type ChoreMutationDeleteChoreArgs = {
+  args?: InputMaybe<DeleteChoreInput>;
+};
+
+
+export type ChoreMutationUpdateChoreArgs = {
+  args?: InputMaybe<UpdateChoreInput>;
+};
+
+export type CreateChoreInput = {
+  createdByUserId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  groupId: Scalars['ID']['input'];
+  isRecurring: Scalars['Boolean']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type CreateGroupInput = {
   createdByUserId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
+};
+
+export type DeleteChoreInput = {
+  id: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 export type DeleteGroupInput = {
@@ -80,9 +126,21 @@ export type MutationUpdateGroupArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  chore: Chore;
+  chores: Array<Chore>;
   group: Group;
   groups: Array<Group>;
   me?: Maybe<User>;
+};
+
+
+export type QueryChoreArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryChoresArgs = {
+  groupId: Scalars['ID']['input'];
 };
 
 
@@ -92,6 +150,14 @@ export type QueryGroupArgs = {
 
 
 export type QueryGroupsArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+export type UpdateChoreInput = {
+  choreId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  isRecurring?: InputMaybe<Scalars['Boolean']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['ID']['input'];
 };
 

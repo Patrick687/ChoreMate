@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
@@ -7,7 +7,7 @@ import { connectToDatabase, sequelize } from './config/db';
 import { context } from './middleware/context';
 import env from './config/env';
 
-const app = express();
+const app: Application = express();
 app.use(cors());
 app.use(express.json());
 
