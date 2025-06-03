@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const HeroSection: React.FC = () => {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
+        <div className="py-14 flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
             <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 md:p-12 flex flex-col items-center max-w-xl w-full transition-colors">
                 {/* Optional Avatar */}
                 <img

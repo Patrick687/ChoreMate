@@ -1,33 +1,52 @@
 import React from "react";
+import { FaGithub } from "react-icons/fa";
 
 const projects = [
     {
-        title: "ChoreMate",
-        description: "A collaborative app for managing household chores and schedules.",
-        tech: ["React", "TypeScript", "GraphQL", "Node.js", "PostgreSQL"],
+        title: "Survivor Fantasy League",
+        description: "Draft Survivor contestants with friends and compete as the season unfolds. Track picks, score points, and see who outlasts the rest!",
+        tech: [
+            "React",
+            "TypeScript",
+            "Redux Toolkit",
+            "Tailwind CSS",
+            "Node.js",
+            "Express",
+            "Sequelize",
+            "PostgreSQL",
+            "Swagger/OpenAPI"
+        ],
         status: "In development",
-        codeUrl: "https://github.com/yourusername/chore-mate-app",
-        demoUrl: "",
-        screenshot: "/choremate-screenshot.png",
-    },
-    {
-        title: "Budget Buddy",
-        description: "A simple tool to track expenses and visualize spending habits.",
-        tech: ["React", "Tailwind", "Firebase"],
-        status: "Demo coming soon",
-        codeUrl: "https://github.com/yourusername/budget-buddy",
+        codeUrl: "https://github.com/Klein-Twins/Survivor-Fantasy-League",
         demoUrl: "",
         screenshot: "/budgetbuddy-screenshot.png",
     },
     {
-        title: "WeatherNow",
-        description: "A minimal weather dashboard with real-time updates.",
-        tech: ["React", "Vite", "OpenWeatherMap API"],
-        status: "Live",
-        codeUrl: "https://github.com/yourusername/weathernow",
-        demoUrl: "https://weathernow-demo.vercel.app/",
-        screenshot: "/weathernow-screenshot.png",
+        title: "ChoreMate",
+        description: "A collaborative app for managing household chores and schedules.",
+        tech: [
+            "React",
+            "TypeScript",
+            "Tailwind CSS",
+            "GraphQL",
+            "Node.js",
+            "Sequelize",
+            "PostgreSQL"
+        ],
+        status: "In development",
+        codeUrl: "https://github.com/Patrick687/ChoreMate",
+        demoUrl: "",
+        screenshot: "/choremate-screenshot.png",
     },
+    // {
+    //     title: "WeatherNow",
+    //     description: "A minimal weather dashboard with real-time updates.",
+    //     tech: ["React", "Vite", "OpenWeatherMap API"],
+    //     status: "Live",
+    //     codeUrl: "https://github.com/yourusername/weathernow",
+    //     demoUrl: "https://weathernow-demo.vercel.app/",
+    //     screenshot: "/weathernow-screenshot.png",
+    // },
 ];
 
 const statusColor = {
@@ -41,7 +60,7 @@ const Projects: React.FC = () => (
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Projects
         </h2>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl px-4">
+        <div className="grid gap-8 md:grid-cols-2 w-full max-w-6xl px-4">
             {projects.map((proj, idx) => (
                 <div
                     key={proj.title}
@@ -56,7 +75,7 @@ const Projects: React.FC = () => (
                         />
                     )}
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{proj.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-3">{proj.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300 h-16 mb-4">{proj.description}</p>
                     <div className="flex flex-wrap gap-2 mb-3">
                         {proj.tech.map((tech) => (
                             <span
@@ -72,14 +91,14 @@ const Projects: React.FC = () => (
                     >
                         {proj.status}
                     </span>
-                    <div className="flex justify-between mt-auto">
+                    <div className="flex justify-between items-center mt-auto">
                         <a
                             href={proj.codeUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-semibold shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                            className=" rounded-lg text-gray-800 hover:text-gray-600 dark:text-gray-100 dark:hover:text-gray-300 font-semibold transition"
                         >
-                            View Code
+                            <FaGithub className="text-3xl" />
                         </a>
                         <a
                             href={proj.demoUrl || "#"}
