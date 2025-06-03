@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import modalReducer from './modal';
+import authReducer from './auth';
 
 const store = configureStore({
     reducer: {
-        modal: modalReducer
+        modal: modalReducer,
+        auth: authReducer
     },
     devTools: import.meta.env.MODE !== 'production',
 });

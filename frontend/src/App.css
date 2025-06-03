@@ -1,3 +1,14 @@
 html {
   scroll-behavior: smooth;
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1f2937 inset !important; /* dark:bg-gray-700 */
+  box-shadow: 0 0 0 1000px #1f2937 inset !important; /* fallback for other browsers */
+  -webkit-text-fill-color: #fff !important; /* text color for dark mode */
+  caret-color: #fff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}

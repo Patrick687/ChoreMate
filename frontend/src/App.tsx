@@ -7,20 +7,27 @@ import type { RootState } from './store/store';
 import { closeModal } from './store/modal';
 import SignupForm from './components/auth/SignupForm';
 import LoginForm from './components/auth/LoginForm';
+import DashBoardPage from './pages/DashboardPage';
+import RootLayout from './pages/RootLayout';
+import ProtectedRoute from './pages/ProtectedRoute';
 
 function App() {
   const isLoggedIn = false;
   const { isOpen, mode } = useSelector((state: RootState) => state.modal);
   const dispatch = useDispatch();
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <LandingPage />} />
-          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-          {/* Add more routes as needed */}
-        </Routes>
-      </BrowserRouter>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<RootLayout />}>
+          <Route index element={<LandingPage />} />
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="dashboard" element={<DashBoardPage />} />
+            {/* Add more protected routes here */}
+          </Route>
+        </Route>
+      </Routes>
+      {/* Modal stays outside so it overlays all pages */}
       <Modal
         isOpen={isOpen}
         onClose={() => dispatch(closeModal())}
@@ -28,7 +35,7 @@ function App() {
       >
         {mode === "signup" ? <SignupForm /> : mode === "login" ? <LoginForm /> : null}
       </Modal>
-    </>
+    </BrowserRouter>
   );
 }
 
