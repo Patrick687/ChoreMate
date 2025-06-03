@@ -1,5 +1,3 @@
-console.log("CHORE RESOLVER LOADED");
-
 import { Chore, CreateChoreInput } from "../generated/graphql-types";
 import { ChoreModel, ChoreModelAttributes } from "../models/ChoresModel";
 import { GroupModel } from "../models/GroupModel";
@@ -32,7 +30,7 @@ export const choreResolvers = {
         chore: Query.chore,
         chores: Query.chores,
     },
-    Mutation: {
+    ChoreMutation: {
         createChore: async function createChore(_: unknown, args: { input: CreateChoreInput; }): Promise<ChoreModelAttributes> {
             const { input } = args;
             const { createdByUserId, groupId, title, description, isRecurring } = input;
@@ -61,7 +59,7 @@ export const choreResolvers = {
             return chore;
         },
 
-        updateChore: async function updateChore(_: unknown, args: { id: string; input: Partial<CreateChoreInput>; }): Promise<ChoreModelAttributes> {
+        updateChoreInfo: async function updateChoreInfo(_: unknown, args: { id: string; input: Partial<CreateChoreInput>; }): Promise<ChoreModelAttributes> {
             const { id, input } = args;
             const chore = await ChoreModel.findByPk(id);
             if (!chore) {
@@ -90,21 +88,22 @@ export const choreResolvers = {
             });
             return chore;
         },
-        Chore: {
-            group: async (parent: ChoreModelAttributes) => {
-                const group = await GroupModel.findByPk(parent.groupId);
-                if (!group) {
-                    throw new NotFoundError(`Group with ID ${parent.groupId} not found`);
-                }
-                return group;
-            },
-            createdBy: async (parent: ChoreModelAttributes) => {
-                const user = await UserModel.findByPk(parent.createdBy);
-                if (!user) {
-                    throw new NotFoundError(`User with ID ${parent.createdBy} not found`);
-                }
-                return user;
+    },
+    Chore: {
+        group: async (parent: ChoreModelAttributes) => {
+            const group = await GroupModel.findByPk(parent.groupId);
+            if (!group) {
+                throw new NotFoundError(`Group with ID ${parent.groupId} not found`);
             }
+            return group;
+        },
+        createdBy: async (parent: ChoreModelAttributes) => {
+            const user = await UserModel.findByPk(parent.createdBy);
+            if (!user) {
+                throw new NotFoundError(`User with ID ${parent.createdBy} not found`);
+            }
+            return user;
         }
     }
+
 };
