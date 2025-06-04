@@ -1,0 +1,16 @@
+mutation createChore($args: CreateChoreInput!) {
+  createChore(args: $args) {
+    id
+    title
+    description
+    createdBy {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    createdAt
+    isRecurring
+  }
+}

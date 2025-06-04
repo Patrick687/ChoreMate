@@ -30,10 +30,9 @@ export const choreResolvers = {
         chore: Query.chore,
         chores: Query.chores,
     },
-    ChoreMutation: {
-        createChore: async function createChore(_: unknown, args: { input: CreateChoreInput; }): Promise<ChoreModelAttributes> {
-            const { input } = args;
-            const { createdByUserId, groupId, title, description, isRecurring } = input;
+    Mutation: {
+        createChore: async function createChore(_: unknown, args: { args: CreateChoreInput; }): Promise<ChoreModelAttributes> {
+            const { createdByUserId, groupId, title, description, isRecurring } = args.args;
 
             // Validate that the group exists
             const group = await GroupModel.findByPk(groupId);

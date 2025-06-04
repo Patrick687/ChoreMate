@@ -10,10 +10,10 @@ const GroupDetailsPage: React.FC = () => {
     const { groupId } = useParams<{ groupId: string; }>();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [inviteOpen, setInviteOpen] = useState(false);
-    const [addChoreOpen, setAddChoreOpen] = useState(false);
+
 
     const { groups, loading, error } = useSelector((state: RootState) => state.groups);
+    const userId = useSelector((state: RootState) => state.auth.user?.id);
     const group = groups.find(g => g.id === groupId);
 
     // Handle loading state
@@ -49,6 +49,20 @@ const GroupDetailsPage: React.FC = () => {
             </div>
         );
     }
+    if (!userId) {
+        return (
+            <div className="max-w-6xl mx-auto py-8">
+                <h1 className="text-2xl font-bold mb-4">User Not Found</h1>
+                <p className="mb-4">You must be logged in to view group details.</p>
+                <button
+                    onClick={() => navigate("/login")}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded"
+                >
+                    Login
+                </button>
+            </div>
+        );
+    }
 
     // Normal render
     return (
@@ -57,13 +71,13 @@ const GroupDetailsPage: React.FC = () => {
                 <h1 className="text-2xl font-bold">{group.name}</h1>
                 <div>
                     <button
-                        onClick={() => dispatch(openModal({ mode: "inviteMember", props: { groupId } }))}
+                        onClick={() => dispatch(openModal({ mode: "inviteMember", props: { groupId, userId } }))}
                         className="mr-2 px-4 py-2 bg-indigo-600 text-white rounded"
                     >
                         Invite Member
                     </button>
                     <button
-                        onClick={() => dispatch(openModal({ mode: "addChore" }))}
+                        onClick={() => dispatch(openModal({ mode: "addChore", props: { groupId, userId } }))}
                         className="px-4 py-2 bg-green-600 text-white rounded"
                     >
                         Add Chore
@@ -83,4 +97,4 @@ const GroupDetailsPage: React.FC = () => {
     );
 };
 
-export default GroupDetailsPage;
+export default GroupDetailsPage;;

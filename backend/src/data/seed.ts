@@ -36,7 +36,8 @@ async function seed() {
             lastName: 'Smith',
             userName: 'alicesmith',
             email: 'alice@example.com',
-            password: 'Password1!'
+            //password: 'Password1!'
+            password: 'Asdf1234!'
         });
 
         const user2 = await User.create({

@@ -84,11 +84,6 @@ const SignupForm: React.FC = () => {
                     {error.message}
                 </p>
             )}
-            {data && (
-                <p className="text-green-600 text-sm mt-2">
-                    Signup successful!
-                </p>
-            )}
         </Form>
     );
 };

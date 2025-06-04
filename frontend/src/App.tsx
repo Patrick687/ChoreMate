@@ -17,6 +17,9 @@ import AddChoreModal from './components/groups/groupDetails/AddChoreModal';
 
 function App() {
   const { isOpen, mode, modalProps } = useSelector((state: RootState) => state.modal);
+  if (modalProps) {
+    console.log("Modal Props:", modalProps);
+  }
   const dispatch = useDispatch();
   return (
     <BrowserRouter>
@@ -45,8 +48,10 @@ function App() {
       >
         {mode === "signup" && <SignupForm />}
         {mode === "login" && <LoginForm />}
-        {mode === "inviteMember" && modalProps.groupId && <InviteMemberModal {...modalProps} />}
-        {mode === "addChore" && <AddChoreModal {...modalProps} />}
+        {/* {mode === "inviteMember" && <InviteMemberModal {...modalProps} />} */}
+        {mode === "addChore" && modalProps && modalProps.userId && modalProps.groupId && (
+          <AddChoreModal userId={modalProps.userId} groupId={modalProps.groupId} />
+        )}
       </Modal>
     </BrowserRouter>
   );

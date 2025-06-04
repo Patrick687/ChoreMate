@@ -1,7 +1,6 @@
 # yaml-language-server: $schema=https://graphql-code-generator.com/config.schema.json
 schema: http://localhost:4000/graphql
 documents:
-  - src/**/*.tsx
   - src/**/*.graphql
 generates:
   src/graphql/generated.ts:

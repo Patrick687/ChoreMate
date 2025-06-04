@@ -32,28 +32,6 @@ export type Chore = {
   title: Scalars['String']['output'];
 };
 
-export type ChoreMutation = {
-  __typename?: 'ChoreMutation';
-  createChore: Chore;
-  deleteChore: Scalars['Boolean']['output'];
-  updateChoreInfo: Chore;
-};
-
-
-export type ChoreMutationCreateChoreArgs = {
-  args?: InputMaybe<CreateChoreInput>;
-};
-
-
-export type ChoreMutationDeleteChoreArgs = {
-  args?: InputMaybe<DeleteChoreInput>;
-};
-
-
-export type ChoreMutationUpdateChoreInfoArgs = {
-  args?: InputMaybe<UpdateChoreInfoInput>;
-};
-
 export type CreateChoreInput = {
   createdByUserId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -88,16 +66,29 @@ export type Group = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createChore: Chore;
   createGroup: Group;
+  deleteChore: Scalars['Boolean']['output'];
   deleteGroup: Scalars['Boolean']['output'];
   login: AuthPayload;
   signup: AuthPayload;
+  updateChoreInfo: Chore;
   updateGroup: Group;
+};
+
+
+export type MutationCreateChoreArgs = {
+  args?: InputMaybe<CreateChoreInput>;
 };
 
 
 export type MutationCreateGroupArgs = {
   args?: InputMaybe<CreateGroupInput>;
+};
+
+
+export type MutationDeleteChoreArgs = {
+  args?: InputMaybe<DeleteChoreInput>;
 };
 
 
@@ -118,6 +109,11 @@ export type MutationSignupArgs = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   userName: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateChoreInfoArgs = {
+  args?: InputMaybe<UpdateChoreInfoInput>;
 };
 
 

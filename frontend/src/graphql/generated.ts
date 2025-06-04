@@ -35,28 +35,6 @@ export type Chore = {
   title: Scalars['String']['output'];
 };
 
-export type ChoreMutation = {
-  __typename?: 'ChoreMutation';
-  createChore: Chore;
-  deleteChore: Scalars['Boolean']['output'];
-  updateChoreInfo: Chore;
-};
-
-
-export type ChoreMutationCreateChoreArgs = {
-  args?: InputMaybe<CreateChoreInput>;
-};
-
-
-export type ChoreMutationDeleteChoreArgs = {
-  args?: InputMaybe<DeleteChoreInput>;
-};
-
-
-export type ChoreMutationUpdateChoreInfoArgs = {
-  args?: InputMaybe<UpdateChoreInfoInput>;
-};
-
 export type CreateChoreInput = {
   createdByUserId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -91,16 +69,29 @@ export type Group = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createChore: Chore;
   createGroup: Group;
+  deleteChore: Scalars['Boolean']['output'];
   deleteGroup: Scalars['Boolean']['output'];
   login: AuthPayload;
   signup: AuthPayload;
+  updateChoreInfo: Chore;
   updateGroup: Group;
+};
+
+
+export type MutationCreateChoreArgs = {
+  args?: InputMaybe<CreateChoreInput>;
 };
 
 
 export type MutationCreateGroupArgs = {
   args?: InputMaybe<CreateGroupInput>;
+};
+
+
+export type MutationDeleteChoreArgs = {
+  args?: InputMaybe<DeleteChoreInput>;
 };
 
 
@@ -121,6 +112,11 @@ export type MutationSignupArgs = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   userName: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateChoreInfoArgs = {
+  args?: InputMaybe<UpdateChoreInfoInput>;
 };
 
 
@@ -179,6 +175,13 @@ export type User = {
   userName: Scalars['String']['output'];
 };
 
+export type CreateChoreMutationVariables = Exact<{
+  args: CreateChoreInput;
+}>;
+
+
+export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -206,6 +209,50 @@ export type GroupsQueryVariables = Exact<{
 export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean }> }> };
 
 
+export const CreateChoreDocument = gql`
+    mutation createChore($args: CreateChoreInput!) {
+  createChore(args: $args) {
+    id
+    title
+    description
+    createdBy {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    createdAt
+    isRecurring
+  }
+}
+    `;
+export type CreateChoreMutationFn = Apollo.MutationFunction<CreateChoreMutation, CreateChoreMutationVariables>;
+
+/**
+ * __useCreateChoreMutation__
+ *
+ * To run a mutation, you first call `useCreateChoreMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateChoreMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createChoreMutation, { data, loading, error }] = useCreateChoreMutation({
+ *   variables: {
+ *      args: // value for 'args'
+ *   },
+ * });
+ */
+export function useCreateChoreMutation(baseOptions?: Apollo.MutationHookOptions<CreateChoreMutation, CreateChoreMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateChoreMutation, CreateChoreMutationVariables>(CreateChoreDocument, options);
+      }
+export type CreateChoreMutationHookResult = ReturnType<typeof useCreateChoreMutation>;
+export type CreateChoreMutationResult = Apollo.MutationResult<CreateChoreMutation>;
+export type CreateChoreMutationOptions = Apollo.BaseMutationOptions<CreateChoreMutation, CreateChoreMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
