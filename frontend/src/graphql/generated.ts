@@ -201,6 +201,13 @@ export type SignupMutationVariables = Exact<{
 
 export type SignupMutation = { __typename?: 'Mutation', signup: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
 
+export type UpdateChoreInfoMutationVariables = Exact<{
+  args?: InputMaybe<UpdateChoreInfoInput>;
+}>;
+
+
+export type UpdateChoreInfoMutation = { __typename?: 'Mutation', updateChoreInfo: { __typename?: 'Chore', id: string, title: string, description?: string | null } };
+
 export type GroupsQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
 }>;
@@ -344,6 +351,41 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const UpdateChoreInfoDocument = gql`
+    mutation UpdateChoreInfo($args: UpdateChoreInfoInput) {
+  updateChoreInfo(args: $args) {
+    id
+    title
+    description
+  }
+}
+    `;
+export type UpdateChoreInfoMutationFn = Apollo.MutationFunction<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>;
+
+/**
+ * __useUpdateChoreInfoMutation__
+ *
+ * To run a mutation, you first call `useUpdateChoreInfoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateChoreInfoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateChoreInfoMutation, { data, loading, error }] = useUpdateChoreInfoMutation({
+ *   variables: {
+ *      args: // value for 'args'
+ *   },
+ * });
+ */
+export function useUpdateChoreInfoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>(UpdateChoreInfoDocument, options);
+      }
+export type UpdateChoreInfoMutationHookResult = ReturnType<typeof useUpdateChoreInfoMutation>;
+export type UpdateChoreInfoMutationResult = Apollo.MutationResult<UpdateChoreInfoMutation>;
+export type UpdateChoreInfoMutationOptions = Apollo.BaseMutationOptions<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>;
 export const GroupsDocument = gql`
     query Groups($userId: ID!) {
   groups(userId: $userId) {

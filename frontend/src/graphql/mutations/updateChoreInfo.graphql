@@ -1,0 +1,7 @@
+mutation UpdateChoreInfo($args: UpdateChoreInfoInput) {
+  updateChoreInfo(args: $args) {
+    id
+    title
+    description
+  }
+}

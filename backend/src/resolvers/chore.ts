@@ -58,27 +58,30 @@ export const choreResolvers = {
             return chore;
         },
 
-        updateChoreInfo: async function updateChoreInfo(_: unknown, args: { id: string; input: Partial<CreateChoreInput>; }): Promise<ChoreModelAttributes> {
-            const { id, input } = args;
-            const chore = await ChoreModel.findByPk(id);
+        updateChoreInfo: async function updateChoreInfo(
+            _: unknown,
+            args: { args: { choreId: string; userId: string; title?: string; description?: string; }; }
+        ): Promise<ChoreModelAttributes> {
+            const input = args.args;
+            if (!input) throw new Error("Missing input");
+            const { choreId, userId, title, description } = input;
+            const chore = await ChoreModel.findByPk(choreId);
             if (!chore) {
-                throw new NotFoundError(`Chore with ID ${id} not found`);
+                throw new NotFoundError(`Chore with ID ${choreId} not found`);
             }
-            const { groupId, title, description, isRecurring } = input;
             // Validate that the group exists if groupId is provided
-            if (groupId) {
-                const group = await GroupModel.findByPk(groupId);
+            if (chore.groupId) {
+                const group = await GroupModel.findByPk(chore.groupId);
                 if (!group) {
-                    throw new NotFoundError(`Group with ID ${groupId} not found`);
+                    throw new NotFoundError(`Group with ID ${chore.groupId} not found`);
                 }
             }
             // Validate that the user exists if createdByUserId is provided
-            if (input.createdByUserId) {
-                const user = await UserModel.findByPk(input.createdByUserId);
+            if (input.userId) {
+                const user = await UserModel.findByPk(input.userId);
                 if (!user) {
-
+                    throw new NotFoundError(`User with ID ${input.userId} not found`);
                 }
-                throw new NotFoundError(`User with ID ${input.createdByUserId} not found`);
             }
             // Update the chore
             await chore.update({

@@ -12,8 +12,9 @@ import RootLayout from './pages/RootLayout';
 import ProtectedRoute from './pages/ProtectedRoute';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailsPage from './pages/GroupDetailsPage';
-import InviteMemberModal from './components/groups/groupDetails/MemberModal';
 import AddChoreModal from './components/groups/groupDetails/AddChoreModal';
+import ChoreDetailModal from './components/chore/ChoreDetail';
+import ErrorModal from './components/utils/error/ErrorModal';
 
 function App() {
   const { isOpen, mode, modalProps } = useSelector((state: RootState) => state.modal);
@@ -43,7 +44,10 @@ function App() {
           mode === "signup" ? "Sign Up" :
             mode === "login" ? "Login" :
               mode === "inviteMember" ? "Invite Member" :
-                mode === "addChore" ? "Add Chore" : ""
+                mode === "addChore" ? "Add Chore" :
+                  mode === "choreDetail" ? "Chore Detail" :
+                    mode === "relogError" ? "Ruh Roh!" :
+                      ""
         }
       >
         {mode === "signup" && <SignupForm />}
@@ -52,6 +56,10 @@ function App() {
         {mode === "addChore" && modalProps && modalProps.userId && modalProps.groupId && (
           <AddChoreModal userId={modalProps.userId} groupId={modalProps.groupId} />
         )}
+        {mode === "choreDetail" && modalProps && modalProps.chore && modalProps.members &&
+          <ChoreDetailModal chore={modalProps.chore} members={modalProps.members} />
+        }
+        {mode === "relogError" && <ErrorModal message={modalProps?.message} />}
       </Modal>
     </BrowserRouter>
   );

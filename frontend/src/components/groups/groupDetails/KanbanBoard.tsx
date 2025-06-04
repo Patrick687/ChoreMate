@@ -1,5 +1,7 @@
 import React from "react";
 import type { Chore, User } from "../../../graphql/generated";
+import { openModal } from "../../../store/modal";
+import { useDispatch } from "react-redux";
 
 type ChoreStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE";
 
@@ -22,6 +24,13 @@ function getStatus(chore: Chore): ChoreStatus {
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ chores, members }) => {
+
+    const dispatch = useDispatch();
+
+    const handleChoreClick = (chore: Chore) => {
+        dispatch(openModal({ mode: "choreDetail", props: { chore, members } }));
+    };
+
     const columns: Record<ChoreStatus, Chore[]> = {
         TODO: [],
         IN_PROGRESS: [],
@@ -47,6 +56,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ chores, members }) => {
                             <div
                                 key={chore.id}
                                 className="bg-white dark:bg-gray-900 rounded shadow p-3 mb-3"
+                                onClick={() => handleChoreClick(chore)}
                             >
                                 <div className="font-semibold">{chore.title}</div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">

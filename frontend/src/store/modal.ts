@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-type ModalMode = "login" | "signup" | "inviteMember" | "addChore" | null;
+type ModalMode = "login" | "signup" | "inviteMember" | "addChore" | "choreDetail" | "relogError" | null;
 
 interface ModalState {
     isOpen: boolean;
