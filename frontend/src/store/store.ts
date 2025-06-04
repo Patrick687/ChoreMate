@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import modalReducer from './modal';
 import authReducer from './auth';
+import groupsReducer from './groups';
 
 const store = configureStore({
     reducer: {
         modal: modalReducer,
-        auth: authReducer
+        auth: authReducer,
+        groups: groupsReducer,
     },
     devTools: import.meta.env.MODE !== 'production',
 });

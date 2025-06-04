@@ -6,6 +6,7 @@ type Group {
   createdBy: User!
   createdAt: Date!
   groupMembers: [User!]!
+  chores: [Chore!]!
 }
 
 type Mutation {

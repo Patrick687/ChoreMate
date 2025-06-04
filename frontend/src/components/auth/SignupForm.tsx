@@ -5,10 +5,10 @@ import FormInput from "../ui/form/FormInput";
 import FormSubmitButton from "../ui/form/FormSubmitButton";
 import { useSignupMutation } from "../../graphql/generated";
 import { useDispatch } from "react-redux";
-import { setToken } from "../../store/auth";
 import { useNavigate } from "react-router-dom";
 import { closeModal } from "../../store/modal";
 import type { AppDispatch } from "../../store/store";
+import { setAuth } from "../../store/auth";
 
 const nameRegex = /^[a-zA-Z]+$/;
 const userNameRegex = /^[a-zA-Z0-9]+$/;
@@ -53,7 +53,7 @@ const SignupForm: React.FC = () => {
 
     useEffect(() => {
         if (data?.signup?.token) {
-            dispatch(setToken(data.signup.token));
+            dispatch(setAuth({ token: data.signup.token, user: data.signup.user }));
             dispatch(closeModal());
             navigate("/dashboard"); // or whatever your main app route will be
         }

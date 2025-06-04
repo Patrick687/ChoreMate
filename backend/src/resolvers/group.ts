@@ -5,6 +5,7 @@ import { GroupMemberModel, GroupMemberModelAttributes, GroupMemberRole } from ".
 import { GroupModel, GroupsModelAttributes } from "../models/GroupModel";
 import { UserModel, UserModelAttributes } from "../models/UserModel";
 import { NotFoundError, UnauthorizedError } from "../utils/error/customErrors";
+import { ChoreModel } from "../models/ChoresModel";
 
 // Move the resolver function out of the object and give it a name
 async function groupsResolver(
@@ -122,6 +123,14 @@ export const groupResolvers = {
             }
             return user;
         },
-
+        chores: async (parent: GroupsModelAttributes) => {
+            const chores = await ChoreModel.findAll({
+                where: {
+                    groupId: parent.id
+                }
+            });
+            return chores;
+        },
     },
+
 };

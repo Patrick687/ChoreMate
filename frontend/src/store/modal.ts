@@ -1,28 +1,32 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-type ModalMode = "signup" | "login" | null;
+type ModalMode = "login" | "signup" | "inviteMember" | "addChore" | null;
 
 interface ModalState {
     isOpen: boolean;
     mode: ModalMode;
+    modalProps?: Record<string, any>;
 }
 
 const initialState: ModalState = {
     isOpen: false,
     mode: null,
+    modalProps: {},
 };
 
 const modalSlice = createSlice({
     name: "modal",
     initialState,
     reducers: {
-        openModal(state, action: PayloadAction<ModalMode>) {
+        openModal: (state, action: PayloadAction<{ mode: ModalMode; props?: Record<string, any>; }>) => {
             state.isOpen = true;
-            state.mode = action.payload;
+            state.mode = action.payload.mode;
+            state.modalProps = action.payload.props || {};
         },
-        closeModal(state) {
+        closeModal: (state) => {
             state.isOpen = false;
             state.mode = null;
+            state.modalProps = {};
         },
     },
 });

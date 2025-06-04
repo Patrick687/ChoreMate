@@ -1,0 +1,28 @@
+query Groups($userId: ID!) {
+  groups(userId: $userId) {
+    id
+    name
+    createdBy {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    createdAt
+    groupMembers {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    chores {
+      id
+      title
+      description
+      createdAt
+      isRecurring
+    }
+  }
+}

@@ -81,6 +81,7 @@ export type DeleteGroupInput = {
 
 export type Group = {
   __typename?: 'Group';
+  chores: Array<Chore>;
   createdAt: Scalars['Date']['output'];
   createdBy: User;
   groupMembers: Array<User>;
@@ -197,6 +198,13 @@ export type SignupMutationVariables = Exact<{
 
 export type SignupMutation = { __typename?: 'Mutation', signup: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
 
+export type GroupsQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean }> }> };
+
 
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
@@ -289,3 +297,66 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const GroupsDocument = gql`
+    query Groups($userId: ID!) {
+  groups(userId: $userId) {
+    id
+    name
+    createdBy {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    createdAt
+    groupMembers {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    chores {
+      id
+      title
+      description
+      createdAt
+      isRecurring
+    }
+  }
+}
+    `;
+
+/**
+ * __useGroupsQuery__
+ *
+ * To run a query within a React component, call `useGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGroupsQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGroupsQuery(baseOptions: Apollo.QueryHookOptions<GroupsQuery, GroupsQueryVariables> & ({ variables: GroupsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
+      }
+export function useGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
+        }
+export function useGroupsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
+        }
+export type GroupsQueryHookResult = ReturnType<typeof useGroupsQuery>;
+export type GroupsLazyQueryHookResult = ReturnType<typeof useGroupsLazyQuery>;
+export type GroupsSuspenseQueryHookResult = ReturnType<typeof useGroupsSuspenseQuery>;
+export type GroupsQueryResult = Apollo.QueryResult<GroupsQuery, GroupsQueryVariables>;

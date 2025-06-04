@@ -5,10 +5,10 @@ import FormInput from "../ui/form/FormInput";
 import FormSubmitButton from "../ui/form/FormSubmitButton";
 import { useLoginMutation } from "../../graphql/generated";
 import { useDispatch } from "react-redux";
-import { setToken } from "../../store/auth";
 import { useNavigate } from "react-router-dom";
 import { closeModal } from "../../store/modal";
 import type { AppDispatch } from "../../store/store";
+import { setAuth } from "../../store/auth";
 
 const schema = z.object({
     email: z.string().email("Please enter a valid email address"),
@@ -22,9 +22,9 @@ const LoginForm: React.FC = () => {
 
     useEffect(() => {
         if (data?.login?.token) {
-            dispatch(setToken(data.login.token));
+            dispatch(setAuth({ token: data.login.token, user: data.login.user }));
             dispatch(closeModal());
-            navigate("/dashboard"); // or your main app route
+            navigate("/dashboard");
         }
     }, [data, dispatch, navigate]);
 

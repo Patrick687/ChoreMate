@@ -10,7 +10,7 @@ const CallToActionSection: React.FC = () => {
                 <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Ready to make chores easy?</h2>
                 <p className="text-indigo-100 mb-8 text-sm sm:text-base">Sign up now and start organizing your group’s chores in minutes.</p>
                 <a
-                    onClick={() => dispatch(openModal("signup"))}
+                    onClick={() => dispatch(openModal({ mode: "signup" }))}
                     className="inline-block bg-white text-indigo-600 font-semibold px-6 sm:px-8 py-3 rounded-full shadow hover:bg-indigo-50 transition"
                 >
                     Get Started

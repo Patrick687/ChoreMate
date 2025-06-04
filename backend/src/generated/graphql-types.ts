@@ -78,6 +78,7 @@ export type DeleteGroupInput = {
 
 export type Group = {
   __typename?: 'Group';
+  chores: Array<Chore>;
   createdAt: Scalars['Date']['output'];
   createdBy: User;
   groupMembers: Array<User>;

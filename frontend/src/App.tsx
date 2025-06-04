@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import Modal from './components/ui/Modal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,10 +10,13 @@ import LoginForm from './components/auth/LoginForm';
 import DashBoardPage from './pages/DashboardPage';
 import RootLayout from './pages/RootLayout';
 import ProtectedRoute from './pages/ProtectedRoute';
+import GroupsPage from './pages/GroupsPage';
+import GroupDetailsPage from './pages/GroupDetailsPage';
+import InviteMemberModal from './components/groups/groupDetails/MemberModal';
+import AddChoreModal from './components/groups/groupDetails/AddChoreModal';
 
 function App() {
-  const isLoggedIn = false;
-  const { isOpen, mode } = useSelector((state: RootState) => state.modal);
+  const { isOpen, mode, modalProps } = useSelector((state: RootState) => state.modal);
   const dispatch = useDispatch();
   return (
     <BrowserRouter>
@@ -23,6 +26,8 @@ function App() {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="dashboard" element={<DashBoardPage />} />
+            <Route path="groups" element={<GroupsPage />} />
+            <Route path="groups/:groupId" element={<GroupDetailsPage />} />
             {/* Add more protected routes here */}
           </Route>
         </Route>
@@ -31,9 +36,17 @@ function App() {
       <Modal
         isOpen={isOpen}
         onClose={() => dispatch(closeModal())}
-        title={mode === "signup" ? "Sign Up" : mode === "login" ? "Login" : ""}
+        title={
+          mode === "signup" ? "Sign Up" :
+            mode === "login" ? "Login" :
+              mode === "inviteMember" ? "Invite Member" :
+                mode === "addChore" ? "Add Chore" : ""
+        }
       >
-        {mode === "signup" ? <SignupForm /> : mode === "login" ? <LoginForm /> : null}
+        {mode === "signup" && <SignupForm />}
+        {mode === "login" && <LoginForm />}
+        {mode === "inviteMember" && modalProps.groupId && <InviteMemberModal {...modalProps} />}
+        {mode === "addChore" && <AddChoreModal {...modalProps} />}
       </Modal>
     </BrowserRouter>
   );
