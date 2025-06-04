@@ -3,7 +3,9 @@ import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
+import './models';
 import { connectToDatabase, sequelize } from './config/db';
+
 import { context } from './middleware/context';
 import env from './config/env';
 

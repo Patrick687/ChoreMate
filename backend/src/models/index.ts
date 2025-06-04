@@ -5,7 +5,7 @@ import { Chore, ChoreModel } from './ChoresModel';
 import { OneTimeChore, OneTimeChoreModel } from './OneTimeChoresModel';
 import { ChoreAssignment, ChoreAssignmentModel } from './ChoreAssignmentsModel';
 
-export const USER_GROUPS_ALIAS = 'groups';
+export const USER_GROUPS_ALIAS = 'createdGroups';
 UserModel.hasMany(Group, { foreignKey: 'createdBy', sourceKey: 'id', as: USER_GROUPS_ALIAS });
 
 export const GROUP_CREATOR_ALIAS = 'creator';
@@ -26,10 +26,10 @@ GroupMemberModel.belongsTo(User, { foreignKey: 'userId', targetKey: 'id', as: GR
 export const GROUP_CHORE_ALIAS = 'chores';
 GroupModel.hasMany(Chore, { foreignKey: 'groupId', sourceKey: 'id', as: GROUP_CHORE_ALIAS });
 
-export const CHORE_GROUP_ALIAS = 'choresForgroup';
+export const CHORE_GROUP_ALIAS = 'group';
 ChoreModel.belongsTo(Group, { foreignKey: 'groupId', targetKey: 'id', as: CHORE_GROUP_ALIAS });
 
-export const CHORE_CREATOR_ALIAS = 'choreCreator';
+export const CHORE_CREATOR_ALIAS = 'creator';
 ChoreModel.belongsTo(User, { foreignKey: 'createdBy', targetKey: 'id', as: CHORE_CREATOR_ALIAS });
 
 export const USER_CHORES_CREATED_ALIAS = 'createdChores';
@@ -53,7 +53,7 @@ ChoreAssignmentModel.belongsTo(User, { foreignKey: 'assignedTo', targetKey: 'id'
 export const USER_CHORE_ASSIGNED_TO_ALIAS = 'choreAssignments';
 UserModel.hasMany(ChoreAssignment, { foreignKey: 'assignedTo', sourceKey: 'id', as: USER_CHORE_ASSIGNED_TO_ALIAS });
 
-export const CHORE_ASSIGNMENT_ASSIGNER_ALIAS = 'assigner';
+export const CHORE_ASSIGNMENT_ASSIGNER_ALIAS = 'choreAssigner';
 ChoreAssignmentModel.belongsTo(User, { foreignKey: 'assignedBy', targetKey: 'id', as: CHORE_ASSIGNMENT_ASSIGNER_ALIAS });
 
 export const USER_CHORE_ASSIGNED_BY_ALIAS = 'assignedChores';

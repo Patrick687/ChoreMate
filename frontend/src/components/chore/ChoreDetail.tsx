@@ -106,7 +106,7 @@ const ChoreDetailModal: React.FC<ChoreDetailModalProps> = ({ chore, members }) =
                 <Form schema={schema} onSubmit={handleSubmit}>
                     <FormInputsWithDueDate chore={chore} />
                     <div className="flex gap-2 mt-4">
-                        <FormSubmitButton>Save</FormSubmitButton>
+                        <FormSubmitButton>{loading ? 'Saving...' : 'Save'}</FormSubmitButton>
                         <button type="button" className="px-4 py-2 bg-gray-300 rounded" onClick={handleCancel}>
                             Cancel
                         </button>
@@ -122,9 +122,8 @@ const FormInputsWithDueDate: React.FC<{ chore: Chore; }> = ({ chore }) => {
 
     return (
         <>
-            <FormInput name="title" label="Title" value={chore.title} required />
-            <FormInput name="description" label="Description" type="textarea" value={chore.description || ''} required />
-
+            <FormInput name="title" label="Title" defaultValue={chore.title} required />
+            <FormInput name="description" label="Description" type="textarea" defaultValue={chore.description || ''} required />
             <FormInput
                 name="dueDate"
                 label="Due Date"

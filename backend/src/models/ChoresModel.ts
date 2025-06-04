@@ -1,10 +1,13 @@
 import { UUID } from "crypto";
-import { USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
-import { GROUP_TABLE_NAME, GroupsModelAttributes } from "./GroupModel";
-import { DataTypes, Model } from "sequelize";
+import { User, USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
+import { Group, GROUP_TABLE_NAME, GroupsModelAttributes } from "./GroupModel";
+import { BelongsToGetAssociationMixin, DataTypes, HasManyGetAssociationsMixin, Model } from "sequelize";
 import { sequelize } from "../config/db";
 import { BadRequestError, UnauthorizedError } from "../utils/error/customErrors";
 import { GroupMemberModel } from "./GroupMembersModel";
+import { OneTimeChore } from "./OneTimeChoresModel";
+import { ChoreAssignment } from "./ChoreAssignmentsModel";
+import { Chore as ChoreGraphQL } from "../generated/graphql-types";
 
 export interface ChoreModelAttributes {
     id: UUID;
@@ -26,6 +29,15 @@ export class Chore extends Model<ChoreModelAttributes, ChoreModelCreationAttribu
     public isRecurring!: ChoreModelAttributes['isRecurring'];
     public createdBy!: ChoreModelAttributes['createdBy'];
     public createdAt!: ChoreModelAttributes['createdAt'];
+
+    // group
+    public getGroup!: BelongsToGetAssociationMixin<Group>;
+    // creator
+    public getCreator!: BelongsToGetAssociationMixin<User>;
+    // oneTimeChores
+    public getOneTimeChores!: HasManyGetAssociationsMixin<OneTimeChore>;
+    // assignments
+    public getAssignments!: HasManyGetAssociationsMixin<ChoreAssignment>;
 }
 
 export const CHORE_TABLE_NAME = 'CHR_CHORE';

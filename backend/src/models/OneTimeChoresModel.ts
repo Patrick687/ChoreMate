@@ -1,13 +1,13 @@
 import { UUID } from "crypto";
-import { CHORE_TABLE_NAME, ChoreModel, ChoreModelAttributes } from "./ChoresModel";
-import { DataTypes, Model } from "sequelize";
+import { Chore, CHORE_TABLE_NAME, ChoreModel, ChoreModelAttributes } from "./ChoresModel";
+import { BelongsToGetAssociationMixin, DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/db";
 import { ConflictError } from "../utils/error/customErrors";
 
 export interface OneTimeChoreModelAttributes {
     id: UUID;
     choreId: ChoreModelAttributes['id'];
-    dueDate: Date;
+    dueDate: Date | null;
 }
 
 export interface OneTimeChoreModelCreationAttributes extends Omit<OneTimeChoreModelAttributes, 'id'> { }
@@ -19,6 +19,9 @@ export class OneTimeChore extends Model<OneTimeChoreModelAttributes, OneTimeChor
     public id!: OneTimeChoreModelAttributes['id'];
     public choreId!: OneTimeChoreModelAttributes['choreId'];
     public dueDate!: OneTimeChoreModelAttributes['dueDate'];
+
+    // chore
+    public getChore!: BelongsToGetAssociationMixin<Chore>;
 }
 
 export const OneTimeChoreModel = OneTimeChore.init(
@@ -38,7 +41,7 @@ export const OneTimeChoreModel = OneTimeChore.init(
         },
         dueDate: {
             type: DataTypes.DATE,
-            allowNull: false,
+            allowNull: true,
         }
     },
     {

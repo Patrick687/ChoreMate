@@ -1,9 +1,13 @@
 import { UUID } from "crypto";
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, HasManyGetAssociationsMixin, Model } from "sequelize";
 import { sequelize } from "../config/db";
 import { BadRequestError } from "../utils/error/customErrors";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import { Group } from "./GroupModel";
+import { GroupMember } from "./GroupMembersModel";
+import { Chore } from "./ChoresModel";
+import { ChoreAssignment } from "./ChoreAssignmentsModel";
 
 
 export interface UserModelAttributes {
@@ -24,6 +28,17 @@ export class User extends Model<UserModelAttributes, UserModelCreationAttributes
     public userName!: UserModelAttributes['userName'];
     public email!: UserModelAttributes['email'];
     public password!: UserModelAttributes['password'];
+
+    // createdGroups
+    public getCreatedGroups!: HasManyGetAssociationsMixin<Group>;
+    // groupMembers
+    public getGroupMembers!: HasManyGetAssociationsMixin<GroupMember>;
+    // createdChores
+    public getCreatedChores!: HasManyGetAssociationsMixin<Chore>;
+    // choreAssignments (assignedTo)
+    public getChoreAssignments!: HasManyGetAssociationsMixin<ChoreAssignment>;
+    // assignedChores (assignedBy)
+    public getAssignedChores!: HasManyGetAssociationsMixin<ChoreAssignment>;
 }
 
 export const USER_TABLE_NAME = 'USR_USERS';

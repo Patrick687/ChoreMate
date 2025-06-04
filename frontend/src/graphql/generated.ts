@@ -2,20 +2,20 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown; }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type MakeEmpty<T extends { [key: string]: unknown; }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  Date: { input: any; output: any; }
+  ID: { input: string; output: string; };
+  String: { input: string; output: string; };
+  Boolean: { input: boolean; output: boolean; };
+  Int: { input: number; output: number; };
+  Float: { input: number; output: number; };
+  Date: { input: any; output: any; };
 };
 
 export type AuthPayload = {
@@ -29,6 +29,7 @@ export type Chore = {
   createdAt: Scalars['Date']['output'];
   createdBy: User;
   description?: Maybe<Scalars['String']['output']>;
+  dueDate?: Maybe<Scalars['Date']['output']>;
   group: Group;
   id: Scalars['ID']['output'];
   isRecurring: Scalars['Boolean']['output'];
@@ -36,7 +37,6 @@ export type Chore = {
 };
 
 export type CreateChoreInput = {
-  createdByUserId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   groupId: Scalars['ID']['input'];
   isRecurring: Scalars['Boolean']['input'];
@@ -49,8 +49,7 @@ export type CreateGroupInput = {
 };
 
 export type DeleteChoreInput = {
-  id: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
+  choreId: Scalars['ID']['input'];
 };
 
 export type DeleteGroupInput = {
@@ -75,6 +74,7 @@ export type Mutation = {
   deleteGroup: Scalars['Boolean']['output'];
   login: AuthPayload;
   signup: AuthPayload;
+  updateChoreDueDate: Chore;
   updateChoreInfo: Chore;
   updateGroup: Group;
 };
@@ -112,6 +112,11 @@ export type MutationSignupArgs = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   userName: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateChoreDueDateArgs = {
+  args?: InputMaybe<UpdateChoreDueDateInput>;
 };
 
 
@@ -153,11 +158,15 @@ export type QueryGroupsArgs = {
   userId: Scalars['ID']['input'];
 };
 
+export type UpdateChoreDueDateInput = {
+  choreId: Scalars['ID']['input'];
+  dueDate?: InputMaybe<Scalars['Date']['input']>;
+};
+
 export type UpdateChoreInfoInput = {
   choreId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
-  userId: Scalars['ID']['input'];
 };
 
 export type UpdateGroupInput = {
@@ -180,7 +189,7 @@ export type CreateChoreMutationVariables = Exact<{
 }>;
 
 
-export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string; }; }; };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -188,7 +197,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string; }; }; };
 
 export type SignupMutationVariables = Exact<{
   userName: Scalars['String']['input'];
@@ -199,21 +208,21 @@ export type SignupMutationVariables = Exact<{
 }>;
 
 
-export type SignupMutation = { __typename?: 'Mutation', signup: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+export type SignupMutation = { __typename?: 'Mutation', signup: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string; }; }; };
 
 export type UpdateChoreInfoMutationVariables = Exact<{
   args?: InputMaybe<UpdateChoreInfoInput>;
 }>;
 
 
-export type UpdateChoreInfoMutation = { __typename?: 'Mutation', updateChoreInfo: { __typename?: 'Chore', id: string, title: string, description?: string | null } };
+export type UpdateChoreInfoMutation = { __typename?: 'Mutation', updateChoreInfo: { __typename?: 'Chore', id: string, title: string, description?: string | null; }; };
 
 export type GroupsQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
 }>;
 
 
-export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean }> }> };
+export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string; }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string; }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean; }>; }>; };
 
 
 export const CreateChoreDocument = gql`
@@ -254,9 +263,9 @@ export type CreateChoreMutationFn = Apollo.MutationFunction<CreateChoreMutation,
  * });
  */
 export function useCreateChoreMutation(baseOptions?: Apollo.MutationHookOptions<CreateChoreMutation, CreateChoreMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateChoreMutation, CreateChoreMutationVariables>(CreateChoreDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateChoreMutation, CreateChoreMutationVariables>(CreateChoreDocument, options);
+}
 export type CreateChoreMutationHookResult = ReturnType<typeof useCreateChoreMutation>;
 export type CreateChoreMutationResult = Apollo.MutationResult<CreateChoreMutation>;
 export type CreateChoreMutationOptions = Apollo.BaseMutationOptions<CreateChoreMutation, CreateChoreMutationVariables>;
@@ -295,9 +304,9 @@ export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutati
  * });
  */
 export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
+}
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
@@ -345,9 +354,9 @@ export type SignupMutationFn = Apollo.MutationFunction<SignupMutation, SignupMut
  * });
  */
 export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<SignupMutation, SignupMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SignupMutation, SignupMutationVariables>(SignupDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<SignupMutation, SignupMutationVariables>(SignupDocument, options);
+}
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
@@ -380,9 +389,9 @@ export type UpdateChoreInfoMutationFn = Apollo.MutationFunction<UpdateChoreInfoM
  * });
  */
 export function useUpdateChoreInfoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>(UpdateChoreInfoDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>(UpdateChoreInfoDocument, options);
+}
 export type UpdateChoreInfoMutationHookResult = ReturnType<typeof useUpdateChoreInfoMutation>;
 export type UpdateChoreInfoMutationResult = Apollo.MutationResult<UpdateChoreInfoMutation>;
 export type UpdateChoreInfoMutationOptions = Apollo.BaseMutationOptions<UpdateChoreInfoMutation, UpdateChoreInfoMutationVariables>;
@@ -433,18 +442,18 @@ export const GroupsDocument = gql`
  *   },
  * });
  */
-export function useGroupsQuery(baseOptions: Apollo.QueryHookOptions<GroupsQuery, GroupsQueryVariables> & ({ variables: GroupsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
-      }
+export function useGroupsQuery(baseOptions: Apollo.QueryHookOptions<GroupsQuery, GroupsQueryVariables> & ({ variables: GroupsQueryVariables; skip?: boolean; } | { skip: boolean; })) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
+}
 export function useGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
+}
 export function useGroupsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
-        }
+  const options = baseOptions === Apollo.skipToken ? baseOptions : { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, options);
+}
 export type GroupsQueryHookResult = ReturnType<typeof useGroupsQuery>;
 export type GroupsLazyQueryHookResult = ReturnType<typeof useGroupsLazyQuery>;
 export type GroupsSuspenseQueryHookResult = ReturnType<typeof useGroupsSuspenseQuery>;

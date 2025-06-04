@@ -6,7 +6,10 @@ const config: CodegenConfig = {
   schema: path.join(__dirname, "../schema/**/*.graphql"),
   generates: {
     [path.join(__dirname, "../generated/graphql-types.ts")]: {
-      plugins: ["typescript"]
+      plugins: ["typescript"],
+      config: {
+        avoidOptionals: true, // <-- Add this line
+      },
     }
   }
 };

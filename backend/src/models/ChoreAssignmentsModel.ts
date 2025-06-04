@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
-import { USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
-import { CHORE_TABLE_NAME, ChoreModelAttributes } from "./ChoresModel";
-import { Model } from "sequelize";
+import { User, USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
+import { Chore, CHORE_TABLE_NAME, ChoreModelAttributes } from "./ChoresModel";
+import { BelongsToGetAssociationMixin, Model } from "sequelize";
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
 
@@ -28,6 +28,12 @@ export class ChoreAssignment extends Model<ChoreAssignmentModelAttributes, Chore
     public assignedAt!: ChoreAssignmentModelAttributes['assignedAt'];
     public isCompleted!: ChoreAssignmentModelAttributes['isCompleted'];
     public completedAt!: ChoreAssignmentModelAttributes['completedAt'];
+
+    public getChore!: BelongsToGetAssociationMixin<Chore>;
+    // assignedToUser
+    public getAssignedToUser!: BelongsToGetAssociationMixin<User>;
+    // choreAssigner
+    public getChoreAssigner!: BelongsToGetAssociationMixin<User>;
 }
 export const ChoreAssignmentModel = ChoreAssignment.init(
     {

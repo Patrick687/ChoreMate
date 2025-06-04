@@ -6,11 +6,13 @@ type Chore {
   createdBy: User!
   createdAt: Date!
   isRecurring: Boolean!
+  dueDate: Date
 }
 
 type Mutation {
   createChore(args: CreateChoreInput): Chore!
   updateChoreInfo(args: UpdateChoreInfoInput): Chore!
+  updateChoreDueDate(args: UpdateChoreDueDateInput): Chore!
   deleteChore(args: DeleteChoreInput): Boolean!
 }
 
@@ -18,18 +20,21 @@ input CreateChoreInput {
   title: String!
   description: String
   groupId: ID!
-  createdByUserId: ID!
   isRecurring: Boolean!
 }
 input UpdateChoreInfoInput {
   choreId: ID!
-  userId: ID!
   title: String
   description: String
 }
+
+input UpdateChoreDueDateInput {
+  choreId: ID!
+  dueDate: Date
+}
+
 input DeleteChoreInput {
-  id: ID!
-  userId: ID!
+  choreId: ID!
 }
 
 type Query {

@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
-import { GROUP_TABLE_NAME, GroupsModelAttributes } from "./GroupModel";
-import { USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
-import { DataTypes, Model } from "sequelize";
+import { Group, GROUP_TABLE_NAME, GroupsModelAttributes } from "./GroupModel";
+import { User, USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
+import { BelongsToGetAssociationMixin, DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/db";
 
 export enum GroupMemberRole {
@@ -28,6 +28,11 @@ export class GroupMember extends Model<GroupMemberModelAttributes, GroupMemberMo
     public userId!: GroupMemberModelAttributes['userId'];
     public role!: GroupMemberModelAttributes['role'];
     public joinedAt!: Date;
+
+    // group
+    public getGroup!: BelongsToGetAssociationMixin<Group>;
+    // user
+    public getUser!: BelongsToGetAssociationMixin<User>;
 }
 
 export const GroupMemberModel = GroupMember.init(

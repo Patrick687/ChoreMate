@@ -25,7 +25,8 @@ export type Chore = {
   __typename?: 'Chore';
   createdAt: Scalars['Date']['output'];
   createdBy: User;
-  description?: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  dueDate: Maybe<Scalars['Date']['output']>;
   group: Group;
   id: Scalars['ID']['output'];
   isRecurring: Scalars['Boolean']['output'];
@@ -33,8 +34,7 @@ export type Chore = {
 };
 
 export type CreateChoreInput = {
-  createdByUserId: Scalars['ID']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
   groupId: Scalars['ID']['input'];
   isRecurring: Scalars['Boolean']['input'];
   title: Scalars['String']['input'];
@@ -46,8 +46,7 @@ export type CreateGroupInput = {
 };
 
 export type DeleteChoreInput = {
-  id: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
+  choreId: Scalars['ID']['input'];
 };
 
 export type DeleteGroupInput = {
@@ -72,28 +71,29 @@ export type Mutation = {
   deleteGroup: Scalars['Boolean']['output'];
   login: AuthPayload;
   signup: AuthPayload;
+  updateChoreDueDate: Chore;
   updateChoreInfo: Chore;
   updateGroup: Group;
 };
 
 
 export type MutationCreateChoreArgs = {
-  args?: InputMaybe<CreateChoreInput>;
+  args: InputMaybe<CreateChoreInput>;
 };
 
 
 export type MutationCreateGroupArgs = {
-  args?: InputMaybe<CreateGroupInput>;
+  args: InputMaybe<CreateGroupInput>;
 };
 
 
 export type MutationDeleteChoreArgs = {
-  args?: InputMaybe<DeleteChoreInput>;
+  args: InputMaybe<DeleteChoreInput>;
 };
 
 
 export type MutationDeleteGroupArgs = {
-  args?: InputMaybe<DeleteGroupInput>;
+  args: InputMaybe<DeleteGroupInput>;
 };
 
 
@@ -112,13 +112,18 @@ export type MutationSignupArgs = {
 };
 
 
+export type MutationUpdateChoreDueDateArgs = {
+  args: InputMaybe<UpdateChoreDueDateInput>;
+};
+
+
 export type MutationUpdateChoreInfoArgs = {
-  args?: InputMaybe<UpdateChoreInfoInput>;
+  args: InputMaybe<UpdateChoreInfoInput>;
 };
 
 
 export type MutationUpdateGroupArgs = {
-  args?: InputMaybe<UpdateGroupInput>;
+  args: InputMaybe<UpdateGroupInput>;
 };
 
 export type Query = {
@@ -127,7 +132,7 @@ export type Query = {
   chores: Array<Chore>;
   group: Group;
   groups: Array<Group>;
-  me?: Maybe<User>;
+  me: Maybe<User>;
 };
 
 
@@ -150,16 +155,20 @@ export type QueryGroupsArgs = {
   userId: Scalars['ID']['input'];
 };
 
+export type UpdateChoreDueDateInput = {
+  choreId: Scalars['ID']['input'];
+  dueDate: InputMaybe<Scalars['Date']['input']>;
+};
+
 export type UpdateChoreInfoInput = {
   choreId: Scalars['ID']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-  userId: Scalars['ID']['input'];
+  description: InputMaybe<Scalars['String']['input']>;
+  title: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateGroupInput = {
   groupId: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['ID']['input'];
 };
 

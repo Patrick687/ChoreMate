@@ -5,6 +5,7 @@ import { ChoreModel } from '../models/ChoresModel';
 import { GroupMemberModel, GroupMemberRole } from '../models/GroupMembersModel';
 import { UUID } from 'crypto';
 import { UnauthorizedError } from '../utils/error/customErrors';
+import { OneTimeChoreModel } from '../models/OneTimeChoresModel';
 
 async function testChoreCreatorValidation(groupId: UUID, nonMemberUserId: UUID) {
     try {
@@ -85,7 +86,7 @@ async function seed() {
             createdBy: user1.id
         });
 
-        await ChoreModel.create({
+        const chore2 = await ChoreModel.create({
             groupId: group1.id,
             title: 'Vacuum living room',
             description: '',
@@ -93,7 +94,12 @@ async function seed() {
             createdBy: user2.id
         });
 
-        await ChoreModel.create({
+        await OneTimeChoreModel.create({
+            choreId: chore2.id,
+            dueDate: new Date('2023-11-15T10:00:00Z') // Example due date
+        });
+
+        const chore3 = await ChoreModel.create({
             groupId: group2.id,
             title: 'Wash dishes',
             description: 'Wash all dishes after dinner',
@@ -101,7 +107,13 @@ async function seed() {
             createdBy: user2.id
         });
 
-        // Create a user who is NOT a member of group1
+        await OneTimeChoreModel.create({
+            choreId: chore3.id,
+            dueDate: new Date('2023-12-01T12:00:00Z') // Example due date
+        });
+
+
+        // Create a user who sis NOT a member of group1
         const outsider = await User.create({
             firstName: 'Charlie',
             lastName: 'Outsider',
