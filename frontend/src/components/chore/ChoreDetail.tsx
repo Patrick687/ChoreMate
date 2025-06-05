@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { z } from "zod";
-import { useUpdateChoreInfoMutation, type Chore, type User } from "../../graphql/generated";
-import FormInput from "../ui/form/FormInput";
-import FormSubmitButton from "../ui/form/FormSubmitButton";
-import Form from "../ui/form/Form";
-import { useDispatch, useSelector } from "react-redux";
-import { updateChoreInfo as updateChoreInfoAction } from "../../store/groups";
+import { type Chore, type User } from "../../graphql/generated";
+import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
+import EditChoreDetail from "./EditChoreDetail";
 
 interface ChoreDetailModalProps {
     choreId: Chore['id'];
@@ -24,9 +21,17 @@ const schema = z.object({
     description: z.string()
         .max(1000, "Description must be less than 1000 characters")
         .optional()
-        .or(z.literal("")), // allow empty string as optional
-    // hasDueDate: z.boolean(),
-    // dueDate: z.string().optional(),
+        .or(z.literal("")),
+    hasDueDate: z.boolean(),
+    dueDate: z.string().optional().nullable(),
+}).superRefine((data, ctx) => {
+    if (data.hasDueDate && !data.dueDate) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["dueDate"],
+            message: "Due date is required if enabled.",
+        });
+    }
 });
 
 
@@ -58,7 +63,7 @@ const ChoreDetailModal: React.FC<ChoreDetailModalProps> = ({ choreId, members })
                         <span className="font-semibold">Description:</span> {chore.description}
                     </div>
                     <div className="mb-2">
-                        <span className="font-semibold">Due:</span> {chore.createdAt ? new Date(chore.createdAt).toLocaleDateString() : "N/A"}
+                        <span className="font-semibold">Due:</span> {chore.dueDate ? new Date(chore.dueDate).toLocaleDateString() : "N/A"}
                     </div>
                     <div className="mb-2 flex items-center">
                         <span className="font-semibold">Assigned to:</span>
@@ -90,57 +95,3 @@ const ChoreDetailModal: React.FC<ChoreDetailModalProps> = ({ choreId, members })
 
 export default ChoreDetailModal;
 
-interface EditChoreDetailProps {
-    chore: Chore;
-    schema: typeof schema;
-    onCancel: () => void;
-}
-
-const EditChoreDetail: React.FC<EditChoreDetailProps> = ({ chore, schema, onCancel }) => {
-    const dispatch = useDispatch();
-    const [updateChoreInfo, { loading, data }] = useUpdateChoreInfoMutation();
-
-    useEffect(() => {
-        if (data?.updateChoreInfo) {
-            dispatch(updateChoreInfoAction({
-                choreId: chore.id,
-                description: data.updateChoreInfo.description,
-                title: data.updateChoreInfo.title,
-            }));
-            onCancel();
-        }
-    }, [data, dispatch, chore.id, onCancel]);
-
-    const handleSubmit = (values: z.infer<typeof schema>) => {
-        updateChoreInfo({
-            variables: {
-                args: {
-                    choreId: chore.id,
-                    title: values.title,
-                    description: values.description,
-                }
-            }
-        });
-    };
-
-    return (
-        <Form schema={schema} onSubmit={handleSubmit}>
-            <FormInput name="title" label="Title" defaultValue={chore.title} />
-            <FormInput name="description" label="Description" type="textarea" defaultValue={chore.description || ''} />
-            {/* <FormInput
-                name="dueDate"
-                label="Due Date"
-                type="date"
-                defaultValue={chore.createdAt ? new Date(chore.createdAt).toISOString().split("T")[0] : ""}
-            /> */}
-            <div className="flex gap-2 mt-4">
-                <FormSubmitButton>
-                    {loading ? 'Saving...' : 'Save'}
-                </FormSubmitButton>
-                <button type="button" className="px-4 py-2 bg-gray-300 rounded" onClick={onCancel}>
-                    Cancel
-                </button>
-            </div>
-        </Form>
-    );
-};

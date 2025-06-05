@@ -1,13 +1,13 @@
 import React from "react";
-import type { Chore, User } from "../../../graphql/generated";
+import type { Chore, Group, User } from "../../../graphql/generated";
 import { openModal } from "../../../store/modal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
 
 type ChoreStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE";
 
 interface KanbanBoardProps {
-    chores: Chore[];
-    members: User[];
+    groupId: Group['id'];
 }
 
 const statusLabels: Record<ChoreStatus, string> = {
@@ -23,12 +23,19 @@ function getStatus(chore: Chore): ChoreStatus {
     return "TODO";
 }
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ chores, members }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
+
+    const groupState = useSelector((state: RootState) => state.groups);
+    const group = groupState.groups.find(g => g.id === groupId);
+    if (!group) {
+        return <div className="p-4">Group not found.</div>;
+    }
+
 
     const dispatch = useDispatch();
 
     const handleChoreClick = (chore: Chore) => {
-        dispatch(openModal({ mode: "choreDetail", props: { choreId: chore.id, members } }));
+        dispatch(openModal({ mode: "choreDetail", props: { choreId: chore.id, members: group.groupMembers } }));
     };
 
     const columns: Record<ChoreStatus, Chore[]> = {
@@ -37,7 +44,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ chores, members }) => {
         REVIEW: [],
         DONE: [],
     };
-    chores.forEach(chore => {
+    group.chores.forEach(chore => {
         const status = getStatus(chore);
         columns[status].push(chore);
     });
@@ -60,7 +67,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ chores, members }) => {
                             >
                                 <div className="font-semibold">{chore.title}</div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                                    Due: {chore.createdAt ? new Date(chore.createdAt).toLocaleDateString() : "N/A"}
+                                    Due: {chore.dueDate ? chore.dueDate : "N/A"}
                                 </div>
                                 <div className="text-xs mt-1">
                                     Assigned to: <span className="font-medium">Unassigned</span>

@@ -10,6 +10,7 @@ mutation createChore($args: CreateChoreInput!) {
       firstName
       lastName
     }
+    dueDate
     createdAt
     isRecurring
   }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
@@ -10,6 +10,8 @@ const GroupDetailsPage: React.FC = () => {
     const { groupId } = useParams<{ groupId: string; }>();
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+
 
 
     const { groups, loading, error } = useSelector((state: RootState) => state.groups);
@@ -35,7 +37,7 @@ const GroupDetailsPage: React.FC = () => {
     }
 
     // Handle group not found
-    if (!group) {
+    if (!group || !groupId) {
         return (
             <div className="max-w-6xl mx-auto py-8">
                 <h1 className="text-2xl font-bold mb-4">Group Not Found</h1>
@@ -88,7 +90,7 @@ const GroupDetailsPage: React.FC = () => {
             <GroupMembers members={group.groupMembers} />
 
             {/* Kanban Board for Chores */}
-            <KanbanBoard chores={group.chores} members={group.groupMembers} />
+            <KanbanBoard groupId={groupId} />
 
             {/* Modals */}
             {/* <InviteMemberModal open={inviteOpen} onClose={() => setInviteOpen(false)} groupId={groupId!} /> */}

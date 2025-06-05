@@ -21,8 +21,14 @@ query Groups {
       id
       title
       description
+      group {
+        id
+        name
+        createdAt
+      }
       createdAt
       isRecurring
+      dueDate
     }
   }
 }

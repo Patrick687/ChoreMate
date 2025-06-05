@@ -184,7 +184,7 @@ export type CreateChoreMutationVariables = Exact<{
 }>;
 
 
-export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, dueDate?: any | null, createdAt: any, isRecurring: boolean, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -205,6 +205,13 @@ export type SignupMutationVariables = Exact<{
 
 export type SignupMutation = { __typename?: 'Mutation', signup: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
 
+export type UpdateChoreDueDateMutationVariables = Exact<{
+  args?: InputMaybe<UpdateChoreDueDateInput>;
+}>;
+
+
+export type UpdateChoreDueDateMutation = { __typename?: 'Mutation', updateChoreDueDate: { __typename?: 'Chore', id: string, dueDate?: any | null } };
+
 export type UpdateChoreInfoMutationVariables = Exact<{
   args?: InputMaybe<UpdateChoreInfoInput>;
 }>;
@@ -215,7 +222,7 @@ export type UpdateChoreInfoMutation = { __typename?: 'Mutation', updateChoreInfo
 export type GroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean }> }> };
+export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, dueDate?: any | null, group: { __typename?: 'Group', id: string, name: string, createdAt: any } }> }> };
 
 
 export const CreateChoreDocument = gql`
@@ -231,6 +238,7 @@ export const CreateChoreDocument = gql`
       firstName
       lastName
     }
+    dueDate
     createdAt
     isRecurring
   }
@@ -353,6 +361,40 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const UpdateChoreDueDateDocument = gql`
+    mutation UpdateChoreDueDate($args: UpdateChoreDueDateInput) {
+  updateChoreDueDate(args: $args) {
+    id
+    dueDate
+  }
+}
+    `;
+export type UpdateChoreDueDateMutationFn = Apollo.MutationFunction<UpdateChoreDueDateMutation, UpdateChoreDueDateMutationVariables>;
+
+/**
+ * __useUpdateChoreDueDateMutation__
+ *
+ * To run a mutation, you first call `useUpdateChoreDueDateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateChoreDueDateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateChoreDueDateMutation, { data, loading, error }] = useUpdateChoreDueDateMutation({
+ *   variables: {
+ *      args: // value for 'args'
+ *   },
+ * });
+ */
+export function useUpdateChoreDueDateMutation(baseOptions?: Apollo.MutationHookOptions<UpdateChoreDueDateMutation, UpdateChoreDueDateMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateChoreDueDateMutation, UpdateChoreDueDateMutationVariables>(UpdateChoreDueDateDocument, options);
+      }
+export type UpdateChoreDueDateMutationHookResult = ReturnType<typeof useUpdateChoreDueDateMutation>;
+export type UpdateChoreDueDateMutationResult = Apollo.MutationResult<UpdateChoreDueDateMutation>;
+export type UpdateChoreDueDateMutationOptions = Apollo.BaseMutationOptions<UpdateChoreDueDateMutation, UpdateChoreDueDateMutationVariables>;
 export const UpdateChoreInfoDocument = gql`
     mutation UpdateChoreInfo($args: UpdateChoreInfoInput) {
   updateChoreInfo(args: $args) {
@@ -412,8 +454,14 @@ export const GroupsDocument = gql`
       id
       title
       description
+      group {
+        id
+        name
+        createdAt
+      }
       createdAt
       isRecurring
+      dueDate
     }
   }
 }

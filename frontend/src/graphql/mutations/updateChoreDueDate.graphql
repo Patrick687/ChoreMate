@@ -1,0 +1,6 @@
+mutation UpdateChoreDueDate($args: UpdateChoreDueDateInput) {
+  updateChoreDueDate(args: $args) {
+    id
+    dueDate
+  }
+}

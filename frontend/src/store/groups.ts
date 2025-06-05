@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { Chore, Group, UpdateChoreInfoInput } from "../graphql/generated";
+import type { Chore, Group, UpdateChoreDueDateInput, UpdateChoreInfoInput } from "../graphql/generated";
 import { GroupsDocument } from "../graphql/generated";
 import client from "../apollo/apolloClient";
 
@@ -58,6 +58,18 @@ const groupsSlice = createSlice({
             } else {
                 console.warn(`Group with chore id ${choreId} not found when trying to update chore info.`);
             }
+        },
+        updateChoreDueDate: (state, action: { payload: UpdateChoreDueDateInput; }) => {
+            const { dueDate, choreId: id } = action.payload;
+            const group = state.groups.find(g => g.chores?.some(c => c.id === id));
+            if (group) {
+                const chore = group.chores?.find(c => c.id === id);
+                if (chore) {
+                    chore.dueDate = dueDate || null;
+                } else {
+                    console.warn(`Chore with id ${id} not found in group ${group.id}.`);
+                }
+            }
         }
     },
     extraReducers: (builder) => {
@@ -77,5 +89,5 @@ const groupsSlice = createSlice({
     },
 });
 
-export const { addChore, updateChoreInfo } = groupsSlice.actions;
+export const { addChore, updateChoreInfo, updateChoreDueDate } = groupsSlice.actions;
 export default groupsSlice.reducer;

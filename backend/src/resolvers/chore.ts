@@ -139,7 +139,7 @@ export const choreResolvers = {
 
         updateChoreDueDate: async function updateChoreDueDate(
             _: unknown,
-            args: { args: { choreId: string; dueDate: Date | null; userId: string; }; },
+            args: { args: { choreId: string; dueDate: string | null; }; },
             context: { user?: { id: UUID; }; }
         ): Promise<ChoreModel> {
             const userId = context.user?.id;
@@ -149,9 +149,14 @@ export const choreResolvers = {
 
             const { choreId: choreIdInput, dueDate: dueDateInput } = args.args;
 
-            if (dueDateInput && !(dueDateInput instanceof Date)) {
-                throw new BadRequestError("Invalid due date format. Must be a Date object or null.");
+            let dueDate: Date | null = null;
+            try {
+                dueDate = dueDateInput ? new Date(dueDateInput) : null;
+            } catch (error) {
+                throw new BadRequestError(`Invalid due date format: ${dueDateInput}`);
             }
+
+
             if (!validator.isUUID(choreIdInput)) {
                 throw new BadRequestError(`Invalid chore ID: ${choreIdInput}`);
             }
@@ -170,10 +175,10 @@ export const choreResolvers = {
             if (!oneTimeChore) {
                 await OneTimeChoreModel.create({
                     choreId: chore.id,
-                    dueDate: dueDateInput,
+                    dueDate: dueDate,
                 });
             } else {
-                await oneTimeChore.update({ dueDate: dueDateInput });
+                await oneTimeChore.update({ dueDate: dueDate });
             }
 
             return chore;
