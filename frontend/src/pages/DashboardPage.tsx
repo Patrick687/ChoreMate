@@ -1,4 +1,5 @@
 import type React from "react";
+import UserInvites from "../components/groups/groupInvites/UserInvites";
 
 const DashBoardPage: React.FC = () => {
     return (
@@ -9,6 +10,7 @@ const DashBoardPage: React.FC = () => {
             <p className="text-center text-gray-600 dark:text-gray-400 mt-4">
                 This is where you can manage your account and settings.
             </p>
+            <UserInvites />
         </div>
     );
 };

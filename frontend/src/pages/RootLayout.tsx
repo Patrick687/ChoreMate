@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom";
 const RootLayout: React.FC = () => (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 mx-2">
             <Outlet />
         </main>
         <Footer />
