@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
 import GroupMembers from "../components/groups/groupDetails/GroupMembers";
-import KanbanBoard from "../components/groups/groupDetails/KanbanBoard";
+import KanbanBoard from "../components/groups/groupDetails/kanban/KanbanBoard";
 import { openModal } from "../store/modal";
 
 const GroupDetailsPage: React.FC = () => {
