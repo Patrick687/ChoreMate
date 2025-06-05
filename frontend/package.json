@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
+    "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^5.0.1",
     "@reduxjs/toolkit": "^2.8.2",
     "graphql": "^16.11.0",
