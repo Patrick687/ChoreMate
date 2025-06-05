@@ -59,12 +59,18 @@ async function seed() {
         });
 
         // Create chores
-        await ChoreModel.create({
+        const chore1 = await ChoreModel.create({
             groupId: group1.id,
             title: 'Take out trash',
             description: 'Take out the trash every Monday',
             isRecurring: false,
             createdBy: user1.id
+        });
+
+        await OneTimeChoreModel.create({
+            choreId: chore1.id,
+            dueDate: new Date('2023-11-01T09:00:00Z'), // Example due date
+            status: ChoreStatus.Todo
         });
 
         const chore2 = await ChoreModel.create({

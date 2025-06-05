@@ -6,7 +6,7 @@ import { useCreateChoreMutation, type CreateChoreInput } from "../../../graphql/
 import { z } from "zod";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../../../store/modal";
-import { addChore } from "../../../store/groups";
+import { addChore as addChoreAction } from "../../../store/chores";
 import type { RootState } from "../../../store/store";
 
 interface AddChoreModalProps {
@@ -40,7 +40,7 @@ const AddChoreModal: React.FC<AddChoreModalProps> = ({ groupId }) => {
                 console.error(`Group with id ${groupId} not found in state when creating chore.`);
             }
             else {
-                dispatch(addChore({
+                dispatch(addChoreAction({
                     groupId,
                     chore: {
                         ...data.createChore,

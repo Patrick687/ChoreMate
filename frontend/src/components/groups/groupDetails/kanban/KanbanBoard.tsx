@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import KanbanColumns from "./KanbanColumns";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
-import { updateChoreStatus } from "../../../../store/groups";
+import { updateChoreStatus as updateChoreStatusAction } from "../../../../store/chores";
 
 interface KanbanBoardProps {
     groupId: Group['id'];
@@ -16,9 +16,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
     const [updateChoreStatusMutation] = useUpdateChoreStatusMutation();
 
     const dispatch = useDispatch();
-    const group = useSelector((state: RootState) =>
-        state.groups.groups.find(g => g.id === groupId)
-    ) as Group;
+    const chores = useSelector((state: RootState) => state.chores.byGroupId[groupId]);
 
     // Group chores by status
     const columns: Record<ChoreStatus, Chore[]> = {
@@ -27,7 +25,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
         DONE: [],
     };
 
-    group.chores.forEach(chore => {
+    chores.forEach(chore => {
         columns[chore.status].push(chore);
     });
 
@@ -44,7 +42,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
 
         if (sourceStatus !== destStatus) {
             // Optimistically update
-            dispatch(updateChoreStatus({
+            dispatch(updateChoreStatusAction({
                 choreId: draggableId,
                 status: destStatus
             }));
@@ -60,7 +58,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
                 });
             } catch (error) {
                 // Revert on error
-                dispatch(updateChoreStatus({
+                dispatch(updateChoreStatusAction({
                     choreId: draggableId,
                     status: sourceStatus
                 }));

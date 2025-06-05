@@ -19,7 +19,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+    "erasableSyntaxOnly": false, // Allow non-erasable syntax for compatibility of enum in generated graphql
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },

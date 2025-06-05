@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { Chore, Group, UpdateChoreDueDateInput, UpdateChoreInfoInput, UpdateChoreStatusInput } from "../graphql/generated";
+import type { Group } from "../graphql/generated";
 import { GroupsDocument } from "../graphql/generated";
 import client from "../apollo/apolloClient";
+import { setChoresForGroup } from "./chores";
 
 interface GroupsState {
     groups: Group[];
@@ -17,11 +18,16 @@ const initialState: GroupsState = {
 
 export const fetchGroups = createAsyncThunk<Group[], { userId: string; }>(
     "groups/fetchGroups",
-    async ({ userId }) => {
+    async ({ userId }, { dispatch }) => {
         const { data } = await client.query({
             query: GroupsDocument,
             variables: { userId },
             fetchPolicy: "network-only",
+        });
+        data.groups.forEach((group: Group) => {
+            if (group.chores) {
+                dispatch(setChoresForGroup({ groupId: group.id, chores: group.chores }));
+            }
         });
         return data.groups;
     }
@@ -31,60 +37,7 @@ const groupsSlice = createSlice({
     name: "groups",
     initialState,
     reducers: {
-        addChore: (state, action: { payload: { groupId: string; chore: Chore; }; }) => {
-            const { groupId, chore } = action.payload;
-            const group = state.groups.find(g => g.id === groupId);
-            if (group) {
-                if (Array.isArray(group.chores)) {
-                    group.chores.push(chore);
-                } else {
-                    group.chores = [chore];
-                }
-            } else {
-                console.warn(`Group with id ${groupId} not found when trying to add a chore.`);
-            }
-        },
-        updateChoreInfo: (state, action: { payload: Omit<UpdateChoreInfoInput, 'userId'>; }) => {
-            const { choreId, title, description } = action.payload;
-            const group = state.groups.find(g => g.chores?.some(c => c.id === choreId));
-            if (group) {
-                const chore = group.chores?.find(c => c.id === choreId);
-                if (chore) {
-                    if (title) chore.title = title;
-                    if (description) chore.description = description;
-                } else {
-                    console.warn(`Chore with id ${choreId} not found in group ${group.id}.`);
-                }
-            } else {
-                console.warn(`Group with chore id ${choreId} not found when trying to update chore info.`);
-            }
-        },
-        updateChoreDueDate: (state, action: { payload: UpdateChoreDueDateInput; }) => {
-            const { dueDate, choreId: id } = action.payload;
-            const group = state.groups.find(g => g.chores?.some(c => c.id === id));
-            if (group) {
-                const chore = group.chores?.find(c => c.id === id);
-                if (chore) {
-                    chore.dueDate = dueDate || null;
-                } else {
-                    console.warn(`Chore with id ${id} not found in group ${group.id}.`);
-                }
-            }
-        },
-        updateChoreStatus: (state, action: { payload: UpdateChoreStatusInput; }) => {
-            const { choreId, status } = action.payload;
-            const group = state.groups.find(g => g.chores?.some(c => c.id === choreId));
-            if (group) {
-                const chore = group.chores?.find(c => c.id === choreId);
-                if (chore) {
-                    chore.status = status;
-                } else {
-                    console.warn(`Chore with id ${choreId} not found in group ${group.id}.`);
-                }
-            } else {
-                console.warn(`Group with chore id ${choreId} not found when trying to update chore status.`);
-            }
-        }
+        // Add group-related reducers here if needed (e.g., addGroup, updateGroup)
     },
     extraReducers: (builder) => {
         builder
@@ -103,5 +56,4 @@ const groupsSlice = createSlice({
     },
 });
 
-export const { addChore, updateChoreInfo, updateChoreDueDate, updateChoreStatus } = groupsSlice.actions;
 export default groupsSlice.reducer;

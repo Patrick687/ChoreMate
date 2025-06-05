@@ -5,7 +5,8 @@ import FormInput from "../ui/form/FormInput";
 import FormSubmitButton from "../ui/form/FormSubmitButton";
 import Form from "../ui/form/Form";
 import { useDispatch } from "react-redux";
-import { updateChoreInfo as updateChoreInfoAction, updateChoreDueDate as updateChoreDueDateAction } from "../../store/groups";
+// import { updateChoreInfo as updateChoreInfoAction, updateChoreDueDate as updateChoreDueDateAction } from "../../store/groups";
+import { updateChoreInfo as updateChoreInfoAction, updateChoreDueDate as updateChoreDueDateAction } from "../../store/chores";
 import { Controller, useFormContext } from "react-hook-form";
 
 interface EditChoreDetailProps {
