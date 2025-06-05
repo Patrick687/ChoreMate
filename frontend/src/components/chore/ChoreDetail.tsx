@@ -6,68 +6,46 @@ import FormSubmitButton from "../ui/form/FormSubmitButton";
 import Form from "../ui/form/Form";
 import { useDispatch, useSelector } from "react-redux";
 import { updateChoreInfo as updateChoreInfoAction } from "../../store/groups";
-import { openModal } from "../../store/modal";
-import { useFormContext } from "react-hook-form";
+import type { RootState } from "../../store/store";
 
 interface ChoreDetailModalProps {
-    chore: Chore;
+    choreId: Chore['id'];
     members: User[];
 }
 
 const schema = z.object({
-    title: z.string(),
-    description: z.string(),
-    hasDueDate: z.boolean(),
-    dueDate: z.string().optional(),
+    title: z.string()
+        .min(1, "Title is required")
+        .max(255, "Title must be less than 255 characters")
+        .regex(
+            /^[\w\s\-.,!?()@#&$%':";/\\[\]{}|^~`+=*<>]*$/,
+            "Title contains invalid characters"
+        ),
+    description: z.string()
+        .max(1000, "Description must be less than 1000 characters")
+        .optional()
+        .or(z.literal("")), // allow empty string as optional
+    // hasDueDate: z.boolean(),
+    // dueDate: z.string().optional(),
 });
 
-const ChoreDetailModal: React.FC<ChoreDetailModalProps> = ({ chore, members }) => {
-    const dispatch = useDispatch();
-    const [editMode, setEditMode] = useState(false);
 
-    const [updateChoreInfo, { loading, data, error }] = useUpdateChoreInfoMutation();
+const ChoreDetailModal: React.FC<ChoreDetailModalProps> = ({ choreId, members }) => {
+    const groups = useSelector((state: RootState) => state.groups);
+    const group = groups.groups.find(g => g.chores.find(c => c.id === choreId));
+    const chore = group?.chores.find(c => c.id === choreId);
 
-    const userId = useSelector((state: any) => state.auth.user?.id);
-    if (!userId) {
-        console.error("User ID is not available in the Redux store.");
-        dispatch(openModal({ mode: "relogError" }));
+    if (!chore) {
+        return <div className="p-4">Chore not found.</div>;
     }
+
+
+    const [editMode, setEditMode] = useState(false);
 
     const assignedUser = members.length > 0 ? members[Math.floor(Math.random() * members.length)] : null;
 
     const handleEdit = () => setEditMode(true);
-    const handleCancel = () => {
-        setEditMode(false);
-    };
-
-    useEffect(() => {
-        if (data?.updateChoreInfo) {
-            dispatch(updateChoreInfoAction({
-                choreId: chore.id,
-                description: data.updateChoreInfo.description,
-                title: data.updateChoreInfo.title,
-            }));
-        }
-    });
-
-    const handleSubmit = (values: z.infer<typeof schema>) => {
-        updateChoreInfo({
-            variables: {
-                args: {
-                    choreId: chore.id,
-                    title: values.title,
-                    description: values.description,
-                    userId: userId
-                }
-            }
-        });
-
-
-        if (error) {
-
-        }
-        setEditMode(false);
-    };
+    const handleCancel = () => setEditMode(false);
 
     return (
         <>
@@ -86,10 +64,7 @@ const ChoreDetailModal: React.FC<ChoreDetailModalProps> = ({ chore, members }) =
                         <span className="font-semibold">Assigned to:</span>
                         {assignedUser ? (
                             <span className="flex items-center ml-2">
-                                {/* <img src={assignedUser.avatarUrl || "/default-avatar.png"} alt={assignedUser.userName} className="w-6 h-6 rounded-full mr-2" /> */}
-                                {/* Placeholder for avatar. Lets just use a person face React Fa Icon for now*/}
                                 <span className="text-gray-700 dark:text-gray-300">
-                                    {/* <FaUserCircle className="w-6 h-6 mr-2" /> */}
                                     <i className="fas fa-user-circle mr-2"></i>
                                 </span>
                                 {assignedUser.userName}
@@ -103,36 +78,69 @@ const ChoreDetailModal: React.FC<ChoreDetailModalProps> = ({ chore, members }) =
                     </button>
                 </div>
             ) : (
-                <Form schema={schema} onSubmit={handleSubmit}>
-                    <FormInputsWithDueDate chore={chore} />
-                    <div className="flex gap-2 mt-4">
-                        <FormSubmitButton>{loading ? 'Saving...' : 'Save'}</FormSubmitButton>
-                        <button type="button" className="px-4 py-2 bg-gray-300 rounded" onClick={handleCancel}>
-                            Cancel
-                        </button>
-                    </div>
-                </Form>
+                <EditChoreDetail
+                    chore={chore}
+                    schema={schema}
+                    onCancel={handleCancel}
+                />
             )}
-        </>
-    );
-};
-const FormInputsWithDueDate: React.FC<{ chore: Chore; }> = ({ chore }) => {
-    const { watch } = useFormContext();
-    const hasDueDate = watch("hasDueDate");
-
-    return (
-        <>
-            <FormInput name="title" label="Title" defaultValue={chore.title} required />
-            <FormInput name="description" label="Description" type="textarea" defaultValue={chore.description || ''} required />
-            <FormInput
-                name="dueDate"
-                label="Due Date"
-                type="date"
-                defaultValue={chore.createdAt ? new Date(chore.createdAt).toISOString().split("T")[0] : ""}
-            />
-
         </>
     );
 };
 
 export default ChoreDetailModal;
+
+interface EditChoreDetailProps {
+    chore: Chore;
+    schema: typeof schema;
+    onCancel: () => void;
+}
+
+const EditChoreDetail: React.FC<EditChoreDetailProps> = ({ chore, schema, onCancel }) => {
+    const dispatch = useDispatch();
+    const [updateChoreInfo, { loading, data }] = useUpdateChoreInfoMutation();
+
+    useEffect(() => {
+        if (data?.updateChoreInfo) {
+            dispatch(updateChoreInfoAction({
+                choreId: chore.id,
+                description: data.updateChoreInfo.description,
+                title: data.updateChoreInfo.title,
+            }));
+            onCancel();
+        }
+    }, [data, dispatch, chore.id, onCancel]);
+
+    const handleSubmit = (values: z.infer<typeof schema>) => {
+        updateChoreInfo({
+            variables: {
+                args: {
+                    choreId: chore.id,
+                    title: values.title,
+                    description: values.description,
+                }
+            }
+        });
+    };
+
+    return (
+        <Form schema={schema} onSubmit={handleSubmit}>
+            <FormInput name="title" label="Title" defaultValue={chore.title} />
+            <FormInput name="description" label="Description" type="textarea" defaultValue={chore.description || ''} />
+            {/* <FormInput
+                name="dueDate"
+                label="Due Date"
+                type="date"
+                defaultValue={chore.createdAt ? new Date(chore.createdAt).toISOString().split("T")[0] : ""}
+            /> */}
+            <div className="flex gap-2 mt-4">
+                <FormSubmitButton>
+                    {loading ? 'Saving...' : 'Save'}
+                </FormSubmitButton>
+                <button type="button" className="px-4 py-2 bg-gray-300 rounded" onClick={onCancel}>
+                    Cancel
+                </button>
+            </div>
+        </Form>
+    );
+};

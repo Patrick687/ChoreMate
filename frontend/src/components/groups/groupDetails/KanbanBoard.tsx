@@ -28,7 +28,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ chores, members }) => {
     const dispatch = useDispatch();
 
     const handleChoreClick = (chore: Chore) => {
-        dispatch(openModal({ mode: "choreDetail", props: { chore, members } }));
+        dispatch(openModal({ mode: "choreDetail", props: { choreId: chore.id, members } }));
     };
 
     const columns: Record<ChoreStatus, Chore[]> = {

@@ -29,6 +29,6 @@ input DeleteGroupInput {
 }
 
 type Query {
-  groups(userId: ID!): [Group!]!
+  groups: [Group!]!
   group(id: ID!): Group!
 }

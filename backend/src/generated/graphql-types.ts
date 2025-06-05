@@ -150,11 +150,6 @@ export type QueryGroupArgs = {
   id: Scalars['ID']['input'];
 };
 
-
-export type QueryGroupsArgs = {
-  userId: Scalars['ID']['input'];
-};
-
 export type UpdateChoreDueDateInput = {
   choreId: Scalars['ID']['input'];
   dueDate: InputMaybe<Scalars['Date']['input']>;

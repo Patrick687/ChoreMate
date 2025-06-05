@@ -1,5 +1,5 @@
-query Groups($userId: ID!) {
-  groups(userId: $userId) {
+query Groups {
+  groups {
     id
     name
     createdBy {

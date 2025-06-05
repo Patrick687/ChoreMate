@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { Chore, Group, UpdateChoreInfoInput, UpdateGroupInput } from "../graphql/generated";
+import type { Chore, Group, UpdateChoreInfoInput } from "../graphql/generated";
 import { GroupsDocument } from "../graphql/generated";
 import client from "../apollo/apolloClient";
 

@@ -1,44 +1,56 @@
 import { UUID } from "crypto";
-import { CreateGroupInput, DeleteGroupInput, QueryGroupArgs, QueryGroupsArgs, UpdateGroupInput } from "../generated/graphql-types";
+import { CreateGroupInput, DeleteGroupInput, QueryGroupArgs, UpdateGroupInput } from "../generated/graphql-types";
 import { GROUP_GROUP_MEMBER_ALIAS, GROUP_MEMBER_USER_ALIAS } from "../models";
 import { GroupMemberModel, GroupMemberModelAttributes, GroupMemberRole } from "../models/GroupMembersModel";
-import { GroupModel, GroupsModelAttributes } from "../models/GroupModel";
+import { Group, GroupModel, GroupsModelAttributes } from "../models/GroupModel";
 import { UserModel, UserModelAttributes } from "../models/UserModel";
-import { NotFoundError, UnauthorizedError } from "../utils/error/customErrors";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../utils/error/customErrors";
 import { ChoreModel } from "../models/ChoresModel";
+import userRepository from "../repositories/auth/userRepository";
+import groupRepository from "../repositories/group/groupRepository";
+import validator from "validator";
 
 // Move the resolver function out of the object and give it a name
 async function groupsResolver(
     _: unknown,
-    _args: QueryGroupsArgs
-): Promise<GroupsModelAttributes[]> {
-    const groups = await GroupModel.findAll({
-        include: [
-            {
-                model: GroupMemberModel,
-                as: GROUP_GROUP_MEMBER_ALIAS,
-                required: true,
-                where: {
-                    userId: _args.userId,
-                },
-            },
-        ],
-    }) as unknown as (GroupsModelAttributes & {
-        [GROUP_GROUP_MEMBER_ALIAS]: (GroupMemberModelAttributes & {
-            [GROUP_MEMBER_USER_ALIAS]: UserModelAttributes;
-        })[];
-    })[];
+    __: unknown,
+    context: { user: { id: UUID; }; }
+): Promise<Group[]> {
+
+    const user = await userRepository.fetchUserByUserId(context.user.id, true);
+    if (!user) {
+        throw new UnauthorizedError(`Unauthorized. Please relog.`);
+    }
+
+    const userAsGroupMembers = await user.getGroupMembers();
+
+    const groups: Group[] = [];
+    for (const gm of userAsGroupMembers) {
+        const group = await gm.getGroup();
+        groups.push(group);
+    }
 
     return groups;
 }
 
 async function groupResolver(
     _: unknown,
-    args: QueryGroupArgs): Promise<GroupsModelAttributes> {
-    const group = await GroupModel.findByPk(args.id);
-    if (!group) {
-        throw new NotFoundError(`Group with ID ${args.id} not found`);
+    { args }: { args: QueryGroupArgs; },
+    context: { user: { id: UUID; }; }
+): Promise<Group> {
+    if (!context.user.id) {
+        throw new UnauthorizedError(`Unauthorized`);
     }
+
+    const { id: idInput } = args;
+    if (!idInput) {
+        throw new BadRequestError(`Group ID is required`);
+    }
+    if (!validator.isUUID(idInput)) {
+        throw new BadRequestError(`Invalid Group ID format`);
+    }
+    const id = idInput as UUID;
+    const group = await groupRepository.fetchGroupByGroupId(id, true);
     return group;
 }
 

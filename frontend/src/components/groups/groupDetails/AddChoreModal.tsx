@@ -10,16 +10,24 @@ import { addChore } from "../../../store/groups";
 import type { RootState } from "../../../store/store";
 
 interface AddChoreModalProps {
-    userId: string;
     groupId: string;
 }
 
 const schema = z.object({
-    title: z.string(),
+    title: z.string()
+        .min(1, "Title is required")
+        .max(255, "Title must be less than 255 characters")
+        .regex(
+            /^[\w\s\-.,!?()@#&$%':";/\\[\]{}|^~`+=*<>]*$/,
+            "Title contains invalid characters"
+        ),
     description: z.string()
+        .max(1000, "Description must be less than 1000 characters")
+        .optional()
+        .or(z.literal("")) // allow empty string as optional
 });
 
-const AddChoreModal: React.FC<AddChoreModalProps> = ({ userId, groupId }) => {
+const AddChoreModal: React.FC<AddChoreModalProps> = ({ groupId }) => {
     const [createChore, { loading, error, data }] = useCreateChoreMutation();
     const dispatch = useDispatch();
 
@@ -50,7 +58,6 @@ const AddChoreModal: React.FC<AddChoreModalProps> = ({ userId, groupId }) => {
         const createChoreInput: CreateChoreInput = {
             title: values.title,
             description: values.description,
-            createdByUserId: userId,
             groupId: groupId,
             isRecurring: false, //TODO: Add recurring option
         };
@@ -68,7 +75,7 @@ const AddChoreModal: React.FC<AddChoreModalProps> = ({ userId, groupId }) => {
             <FormInput name="title" label="Title" autoComplete="off" required />
             <FormInput name="description" label="Description" autoComplete="off" required />
             <FormSubmitButton>
-                {loading ? "Signing up..." : "Sign up"}
+                {loading ? "Creating Chore" : "Create Chore"}
             </FormSubmitButton>
             {error && (
                 <p className="text-red-500 text-center text-sm mt-2">
