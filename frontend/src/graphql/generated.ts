@@ -18,6 +18,11 @@ export type Scalars = {
   Date: { input: any; output: any; }
 };
 
+export type AssignChoreInput = {
+  assignedTo: Scalars['ID']['input'];
+  choreId: Scalars['ID']['input'];
+};
+
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   token: Scalars['String']['output'];
@@ -26,6 +31,7 @@ export type AuthPayload = {
 
 export type Chore = {
   __typename?: 'Chore';
+  assignment: ChoreAssignment;
   createdAt: Scalars['Date']['output'];
   createdBy: User;
   description?: Maybe<Scalars['String']['output']>;
@@ -35,6 +41,14 @@ export type Chore = {
   isRecurring: Scalars['Boolean']['output'];
   status: ChoreStatus;
   title: Scalars['String']['output'];
+};
+
+export type ChoreAssignment = {
+  __typename?: 'ChoreAssignment';
+  assignedAt: Scalars['Date']['output'];
+  assignedBy?: Maybe<User>;
+  assignedTo?: Maybe<User>;
+  id: Scalars['ID']['output'];
 };
 
 export enum ChoreStatus {
@@ -68,23 +82,55 @@ export type Group = {
   chores: Array<Chore>;
   createdAt: Scalars['Date']['output'];
   createdBy: User;
+  groupInvites: Array<GroupInvite>;
   groupMembers: Array<User>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
 };
 
+export type GroupInvite = {
+  __typename?: 'GroupInvite';
+  createdAt: Scalars['Date']['output'];
+  group: Group;
+  id: Scalars['ID']['output'];
+  invitedUser: User;
+  inviterUser: User;
+  respondedAt?: Maybe<Scalars['Date']['output']>;
+  status: GroupInviteStatus;
+};
+
+export enum GroupInviteStatus {
+  Accepted = 'ACCEPTED',
+  Declined = 'DECLINED',
+  Pending = 'PENDING'
+}
+
+export type InviteToGroupInput = {
+  groupId: Scalars['ID']['input'];
+  invitedUserId: Scalars['ID']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  assignChore: ChoreAssignment;
   createChore: Chore;
   createGroup: Group;
   deleteChore: Scalars['Boolean']['output'];
   deleteGroup: Scalars['Boolean']['output'];
+  inviteToGroup: GroupInvite;
   login: AuthPayload;
+  respondToGroupInvite: GroupInvite;
   signup: AuthPayload;
+  unassignChore: ChoreAssignment;
   updateChoreDueDate: Chore;
   updateChoreInfo: Chore;
   updateChoreStatus: Chore;
   updateGroup: Group;
+};
+
+
+export type MutationAssignChoreArgs = {
+  args?: InputMaybe<AssignChoreInput>;
 };
 
 
@@ -108,9 +154,19 @@ export type MutationDeleteGroupArgs = {
 };
 
 
+export type MutationInviteToGroupArgs = {
+  args?: InputMaybe<InviteToGroupInput>;
+};
+
+
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationRespondToGroupInviteArgs = {
+  args?: InputMaybe<RespondToGroupInviteInput>;
 };
 
 
@@ -120,6 +176,11 @@ export type MutationSignupArgs = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   userName: Scalars['String']['input'];
+};
+
+
+export type MutationUnassignChoreArgs = {
+  args?: InputMaybe<UnassignChoreInput>;
 };
 
 
@@ -147,8 +208,10 @@ export type Query = {
   chore: Chore;
   chores: Array<Chore>;
   group: Group;
+  groupInvites: Array<GroupInvite>;
   groups: Array<Group>;
   me?: Maybe<User>;
+  myGroupInvites: Array<GroupInvite>;
 };
 
 
@@ -164,6 +227,20 @@ export type QueryChoresArgs = {
 
 export type QueryGroupArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGroupInvitesArgs = {
+  groupId: Scalars['ID']['input'];
+};
+
+export type RespondToGroupInviteInput = {
+  inviteId: Scalars['ID']['input'];
+  response: GroupInviteStatus;
+};
+
+export type UnassignChoreInput = {
+  choreId: Scalars['ID']['input'];
 };
 
 export type UpdateChoreDueDateInput = {
@@ -192,6 +269,7 @@ export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
+  groupInvites: Array<GroupInvite>;
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
   userName: Scalars['String']['output'];
@@ -203,6 +281,13 @@ export type CreateChoreMutationVariables = Exact<{
 
 
 export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, dueDate?: any | null, createdAt: any, isRecurring: boolean, status: ChoreStatus, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+
+export type AssignChoreMutationVariables = Exact<{
+  args?: InputMaybe<AssignChoreInput>;
+}>;
+
+
+export type AssignChoreMutation = { __typename?: 'Mutation', assignChore: { __typename?: 'ChoreAssignment', id: string, assignedAt: any, assignedTo?: { __typename?: 'User', email: string, firstName: string, lastName: string, userName: string, id: string } | null, assignedBy?: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string } | null } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -222,6 +307,13 @@ export type SignupMutationVariables = Exact<{
 
 
 export type SignupMutation = { __typename?: 'Mutation', signup: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+
+export type UnassignChoreMutationVariables = Exact<{
+  args?: InputMaybe<UnassignChoreInput>;
+}>;
+
+
+export type UnassignChoreMutation = { __typename?: 'Mutation', unassignChore: { __typename?: 'ChoreAssignment', id: string, assignedAt: any, assignedBy?: { __typename?: 'User', email: string, firstName: string, id: string, lastName: string, userName: string } | null, assignedTo?: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string } | null } };
 
 export type UpdateChoreDueDateMutationVariables = Exact<{
   args?: InputMaybe<UpdateChoreDueDateInput>;
@@ -247,7 +339,7 @@ export type UpdateChoreStatusMutation = { __typename?: 'Mutation', updateChoreSt
 export type GroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, dueDate?: any | null, status: ChoreStatus, group: { __typename?: 'Group', id: string, name: string, createdAt: any } }> }> };
+export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, dueDate?: any | null, status: ChoreStatus, group: { __typename?: 'Group', id: string, name: string, createdAt: any }, createdBy: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string }, assignment: { __typename?: 'ChoreAssignment', id: string, assignedAt: any, assignedTo?: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string } | null, assignedBy?: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string } | null } }>, groupInvites: Array<{ __typename?: 'GroupInvite', id: string, status: GroupInviteStatus, createdAt: any, respondedAt?: any | null, inviterUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, invitedUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } }> }> };
 
 
 export const CreateChoreDocument = gql`
@@ -296,6 +388,54 @@ export function useCreateChoreMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateChoreMutationHookResult = ReturnType<typeof useCreateChoreMutation>;
 export type CreateChoreMutationResult = Apollo.MutationResult<CreateChoreMutation>;
 export type CreateChoreMutationOptions = Apollo.BaseMutationOptions<CreateChoreMutation, CreateChoreMutationVariables>;
+export const AssignChoreDocument = gql`
+    mutation AssignChore($args: AssignChoreInput) {
+  assignChore(args: $args) {
+    id
+    assignedTo {
+      email
+      firstName
+      lastName
+      userName
+      id
+    }
+    assignedBy {
+      userName
+      lastName
+      id
+      firstName
+      email
+    }
+    assignedAt
+  }
+}
+    `;
+export type AssignChoreMutationFn = Apollo.MutationFunction<AssignChoreMutation, AssignChoreMutationVariables>;
+
+/**
+ * __useAssignChoreMutation__
+ *
+ * To run a mutation, you first call `useAssignChoreMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAssignChoreMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [assignChoreMutation, { data, loading, error }] = useAssignChoreMutation({
+ *   variables: {
+ *      args: // value for 'args'
+ *   },
+ * });
+ */
+export function useAssignChoreMutation(baseOptions?: Apollo.MutationHookOptions<AssignChoreMutation, AssignChoreMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AssignChoreMutation, AssignChoreMutationVariables>(AssignChoreDocument, options);
+      }
+export type AssignChoreMutationHookResult = ReturnType<typeof useAssignChoreMutation>;
+export type AssignChoreMutationResult = Apollo.MutationResult<AssignChoreMutation>;
+export type AssignChoreMutationOptions = Apollo.BaseMutationOptions<AssignChoreMutation, AssignChoreMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -387,6 +527,54 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const UnassignChoreDocument = gql`
+    mutation UnassignChore($args: UnassignChoreInput) {
+  unassignChore(args: $args) {
+    id
+    assignedBy {
+      email
+      firstName
+      id
+      lastName
+      userName
+    }
+    assignedAt
+    assignedTo {
+      userName
+      lastName
+      id
+      firstName
+      email
+    }
+  }
+}
+    `;
+export type UnassignChoreMutationFn = Apollo.MutationFunction<UnassignChoreMutation, UnassignChoreMutationVariables>;
+
+/**
+ * __useUnassignChoreMutation__
+ *
+ * To run a mutation, you first call `useUnassignChoreMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnassignChoreMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unassignChoreMutation, { data, loading, error }] = useUnassignChoreMutation({
+ *   variables: {
+ *      args: // value for 'args'
+ *   },
+ * });
+ */
+export function useUnassignChoreMutation(baseOptions?: Apollo.MutationHookOptions<UnassignChoreMutation, UnassignChoreMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnassignChoreMutation, UnassignChoreMutationVariables>(UnassignChoreDocument, options);
+      }
+export type UnassignChoreMutationHookResult = ReturnType<typeof useUnassignChoreMutation>;
+export type UnassignChoreMutationResult = Apollo.MutationResult<UnassignChoreMutation>;
+export type UnassignChoreMutationOptions = Apollo.BaseMutationOptions<UnassignChoreMutation, UnassignChoreMutationVariables>;
 export const UpdateChoreDueDateDocument = gql`
     mutation UpdateChoreDueDate($args: UpdateChoreDueDateInput) {
   updateChoreDueDate(args: $args) {
@@ -523,6 +711,51 @@ export const GroupsDocument = gql`
       isRecurring
       dueDate
       status
+      createdBy {
+        userName
+        lastName
+        id
+        firstName
+        email
+      }
+      assignment {
+        id
+        assignedTo {
+          userName
+          lastName
+          id
+          firstName
+          email
+        }
+        assignedBy {
+          userName
+          lastName
+          id
+          firstName
+          email
+        }
+        assignedAt
+      }
+    }
+    groupInvites {
+      id
+      inviterUser {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+      invitedUser {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+      status
+      createdAt
+      respondedAt
     }
   }
 }

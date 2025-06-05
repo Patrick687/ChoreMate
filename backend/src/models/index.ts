@@ -45,8 +45,8 @@ OneTimeChoreModel.belongsTo(Chore, { foreignKey: 'choreId', targetKey: 'id', as:
 export const CHORE_ASSIGNMENT_CHORE_ALIAS = 'chore';
 ChoreAssignmentModel.belongsTo(Chore, { foreignKey: 'choreId', targetKey: 'id', as: CHORE_ASSIGNMENT_CHORE_ALIAS });
 
-export const CHORE_CHORE_ASSIGNMENT_ALIAS = 'assignments';
-ChoreModel.hasMany(ChoreAssignment, { foreignKey: 'choreId', sourceKey: 'id', as: CHORE_CHORE_ASSIGNMENT_ALIAS });
+export const CHORE_CHORE_ASSIGNMENT_ALIAS = 'assignment';
+ChoreModel.hasOne(ChoreAssignment, { foreignKey: 'choreId', sourceKey: 'id', as: CHORE_CHORE_ASSIGNMENT_ALIAS });
 
 export const CHORE_ASSIGNMENT_ASSIGNED_TO_ALIAS = 'assignedToUser';
 ChoreAssignmentModel.belongsTo(User, { foreignKey: 'assignedTo', targetKey: 'id', as: CHORE_ASSIGNMENT_ASSIGNED_TO_ALIAS });

@@ -4,15 +4,14 @@ import { Chore, CHORE_TABLE_NAME, ChoreModelAttributes } from "./ChoresModel";
 import { BelongsToGetAssociationMixin, Model } from "sequelize";
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
+import { InternalServerError, UnauthorizedError } from "../utils/error/customErrors";
 
 export interface ChoreAssignmentModelAttributes {
     id: UUID;
     choreId: ChoreModelAttributes['id'];
-    assignedTo: UserModelAttributes['id'];
-    assignedBy: UserModelAttributes['id'];
+    assignedTo: UserModelAttributes['id'] | null;
+    assignedBy: UserModelAttributes['id'] | null;
     assignedAt: Date;
-    isCompleted: boolean;
-    completedAt: Date | null;
 }
 
 export interface ChoreAssignmentModelCreationAttributes extends Omit<ChoreAssignmentModelAttributes, 'id' | 'assignedAt' | 'isCompleted' | 'completedAt'> { }
@@ -26,8 +25,6 @@ export class ChoreAssignment extends Model<ChoreAssignmentModelAttributes, Chore
     public assignedTo!: ChoreAssignmentModelAttributes['assignedTo'];
     public assignedBy!: ChoreAssignmentModelAttributes['assignedBy'];
     public assignedAt!: ChoreAssignmentModelAttributes['assignedAt'];
-    public isCompleted!: ChoreAssignmentModelAttributes['isCompleted'];
-    public completedAt!: ChoreAssignmentModelAttributes['completedAt'];
 
     public getChore!: BelongsToGetAssociationMixin<Chore>;
     // assignedToUser
@@ -52,7 +49,8 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
         },
         assignedTo: {
             type: DataTypes.UUID,
-            allowNull: false,
+            defaultValue: null,
+            allowNull: true,
             references: {
                 model: USER_TABLE_NAME, // Assuming the UserModel is defined in the same file or imported correctly
                 key: 'id',
@@ -60,7 +58,8 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
         },
         assignedBy: {
             type: DataTypes.UUID,
-            allowNull: false,
+            allowNull: true,
+            defaultValue: null,
             references: {
                 model: USER_TABLE_NAME, // Assuming the UserModel is defined in the same file or imported correctly
                 key: 'id',
@@ -71,21 +70,80 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
             allowNull: false,
             defaultValue: DataTypes.NOW,
         },
-        isCompleted: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        },
-        completedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            defaultValue: null,
-        },
     },
     {
         sequelize: sequelize, // Assuming sequelize is imported from your db config
         tableName: CHORE_ASSIGNMENT_TABLE_NAME,
         modelName: CHORE_ASSIGNMENT_MODEL_NAME,
+        hooks: {
+            beforeCreate: async (assignment: ChoreAssignment) => {
+                //Check assignedTo and assignedBy are in the group of the chore
+                const chore = await assignment.getChore();
+                const group = await chore.getGroup();
+                const groupMembers = await group.getGroupMembers();
+
+                //If AssignedTo is null, then assignedBy must be null as well
+                if (assignment.assignedTo === null && assignment.assignedBy !== null) {
+                    throw new InternalServerError("If assignedTo is null, then assignedBy must also be null");
+                }
+                if (assignment.assignedTo !== null && assignment.assignedBy === null) {
+                    throw new InternalServerError("If assignedBy is null, then assignedTo must also be null");
+                }
+
+                if (assignment.assignedTo === null && assignment.assignedBy === null) {
+                    assignment.assignedAt = new Date();
+                    return;
+                }
+
+
+                //Check if assignedTo is a member of the group
+                const assignedToUser = await assignment.getAssignedToUser();
+                const isAssignedToMember = groupMembers.some(member => member.userId === assignedToUser.id);
+                if (!isAssignedToMember) {
+                    throw new UnauthorizedError(`User ${assignedToUser.id} is not a member of the group ${group.id}`);
+                }
+                //Check if assignedBy is a member of the group
+                const assignedByUser = await assignment.getChoreAssigner();
+                const isAssignedByMember = groupMembers.some(member => member.userId === assignedByUser.id);
+                if (!isAssignedByMember) {
+                    throw new UnauthorizedError(`User ${assignedByUser.id} is not a member of the group ${group.id}`);
+                }
+                assignment.assignedAt = new Date();
+            },
+            beforeUpdate: async (assignment: ChoreAssignment) => {
+                //Check assignedTo and assignedBy are in the group of the chore
+                const chore = await assignment.getChore();
+                const group = await chore.getGroup();
+                const groupMembers = await group.getGroupMembers();
+
+                //If AssignedTo is null, then assignedBy must be null as well
+                if (assignment.assignedTo === null && assignment.assignedBy !== null) {
+                    throw new InternalServerError("If assignedTo is null, then assignedBy must also be null");
+                }
+                if (assignment.assignedTo !== null && assignment.assignedBy === null) {
+                    throw new InternalServerError("If assignedBy is null, then assignedTo must also be null");
+                }
+
+                if (assignment.assignedTo === null && assignment.assignedBy === null) {
+                    assignment.assignedAt = new Date();
+                    return;
+                }
+
+                //Check if assignedTo is a member of the group
+                const assignedToUser = await assignment.getAssignedToUser();
+                const isAssignedToMember = groupMembers.some(member => member.userId === assignedToUser.id);
+                if (!isAssignedToMember) {
+                    throw new UnauthorizedError(`User ${assignedToUser.id} is not a member of the group ${group.id}`);
+                }
+                //Check if assignedBy is a member of the group
+                const assignedByUser = await assignment.getChoreAssigner();
+                const isAssignedByMember = groupMembers.some(member => member.userId === assignedByUser.id);
+                if (!isAssignedByMember) {
+                    throw new UnauthorizedError(`User ${assignedByUser.id} is not a member of the group ${group.id}`);
+                }
+                assignment.assignedAt = new Date();
+            },
+        }
 
     }
 );

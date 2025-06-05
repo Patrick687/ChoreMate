@@ -1,4 +1,4 @@
-import { ChoreStatus, CreateChoreInput } from "../generated/graphql-types";
+import { AssignChoreInput, ChoreStatus, CreateChoreInput } from "../generated/graphql-types";
 import { Chore as ChoreModel } from "../models/ChoresModel";
 import choreHelper from "../helpers/group/chore/choreHelper";
 import { OneTimeChoreModel } from "../models/OneTimeChoresModel";
@@ -10,7 +10,7 @@ import groupRepository from "../repositories/group/groupRepository";
 import userRepository from "../repositories/auth/userRepository";
 import groupHelper from "../helpers/group/groupHelper";
 import { sequelize } from "../config/db";
-
+import { ChoreAssignment as ChoreAssignmentModel } from "../models/ChoreAssignmentsModel";
 const Query = {
     chore: async function chore(_: unknown, args: { id: string; }, context: { user?: { id: UUID; }; }): Promise<ChoreModel> {
         const { id: idInput } = args;
@@ -93,6 +93,13 @@ export const choreResolvers = {
                     choreId: chore.id,
                     dueDate: null,
                 });
+
+                const assignment = await chore.createAssignment({
+                    assignedTo: null,
+                    assignedBy: null,
+                    choreId: chore.id,
+                });
+
                 await transaction.commit();
                 return chore;
             } catch (error) {
@@ -209,6 +216,106 @@ export const choreResolvers = {
             oneTimeChore.update({ status: status });
 
             return chore;
+        },
+        assignChore: async function assignChore(_: unknown, args: { args: AssignChoreInput; }, context: { user?: { id: UUID; }; }): Promise<ChoreModel> {
+            const userId = context.user?.id;
+            if (!userId) {
+                throw new Error("Not authenticated");
+            }
+            const assignedByUserId = userId;
+            const { assignedTo: assignedToInput, choreId: choreIdInput } = args.args;
+            if (!validator.isUUID(assignedToInput)) {
+                throw new BadRequestError(`Invalid user ID: ${assignedToInput}`);
+            }
+            const assignedToUserId = assignedToInput as UUID;
+            if (!validator.isUUID(choreIdInput)) {
+                throw new BadRequestError(`Invalid chore ID: ${choreIdInput}`);
+            }
+
+            const choreId = choreIdInput as UUID;
+            const chore = await choreRepository.fetchChoreByChoreId(choreId, true);
+            const group = await chore.getGroup();
+            const groupMembers = await group.getGroupMembers();
+            const isAssignedByUserInGroup = groupMembers.some(member => member.userId === assignedByUserId);
+            const isAssignedToUserInGroup = groupMembers.some(member => member.userId === assignedToUserId);
+            if (!isAssignedByUserInGroup) {
+                throw new UnauthorizedError('You are not in this group. Cannot assign chore.');
+            }
+            if (!isAssignedToUserInGroup) {
+                throw new UnauthorizedError('The user you are trying to assign the chore to is not in this group.');
+            }
+            const transaction = await sequelize.transaction();
+            try {
+                const existingAssignment = await chore.getAssignment();
+                if (existingAssignment) {
+                    // If an assignment already exists, update it
+                    await existingAssignment.update({
+                        assignedTo: assignedToUserId,
+                        assignedBy: assignedByUserId,
+                    }, { transaction });
+                } else {
+                    // Create a new assignment
+                    await chore.createAssignment({
+                        assignedTo: assignedToUserId,
+                        assignedBy: assignedByUserId,
+                        choreId: chore.id,
+                    }, { transaction });
+                }
+                await transaction.commit();
+                return chore;
+            }
+            catch (error) {
+                await transaction.rollback();
+                console.error("Error assigning chore:", error);
+                throw new InternalServerError("Failed to assign chore");
+            }
+        },
+
+        unassignChore: async function unassignChore(_: unknown, args: { args: { choreId: string; }; }, context: { user?: { id: UUID; }; }): Promise<ChoreModel> {
+            const userId = context.user?.id;
+            if (!userId) {
+                throw new Error("Not authenticated");
+            }
+            const { choreId: choreIdInput } = args.args;
+            if (!validator.isUUID(choreIdInput)) {
+                throw new BadRequestError(`Invalid chore ID: ${choreIdInput}`);
+            }
+            const choreId = choreIdInput as UUID;
+
+            const chore = await choreRepository.fetchChoreByChoreId(choreId, true);
+            const group = await chore.getGroup();
+            const groupMembers = await group.getGroupMembers();
+            const isUserInGroup = groupMembers.some(member => member.userId === userId);
+            if (!isUserInGroup) {
+                throw new UnauthorizedError('You are not in this group. Cannot unassign chore.');
+            }
+
+            const assignment = await chore.getAssignment();
+            const transaction = await sequelize.transaction();
+            try {
+                const existingAssignment = await chore.getAssignment();
+                if (existingAssignment) {
+                    // If an assignment already exists, update it
+                    await existingAssignment.update({
+                        assignedTo: null,
+                        assignedBy: userId,
+                    }, { transaction });
+                } else {
+                    // Create a new assignment
+                    await chore.createAssignment({
+                        assignedTo: null,
+                        assignedBy: userId,
+                        choreId: chore.id,
+                    }, { transaction });
+                }
+                await transaction.commit();
+                return chore;
+            }
+            catch (error) {
+                await transaction.rollback();
+                console.error("Error unassigning chore:", error);
+                throw new InternalServerError("Failed to unassign chore");
+            }
         }
     },
 
@@ -223,6 +330,19 @@ export const choreResolvers = {
         },
         group: async (parent: ChoreModel) => await parent.getGroup(),
         createdBy: async (parent: ChoreModel) => await parent.getCreator(),
+        assignment: async (parent: ChoreModel) => {
+            return await parent.getAssignment();
+        }
+    },
+    ChoreAssignment: {
+        assignedBy: async (parent: ChoreAssignmentModel) => {
+            if (!parent.assignedBy) return null;
+            return await parent.getChoreAssigner();
+        },
+        assignedTo: async (parent: ChoreAssignmentModel) => {
+            if (!parent.assignedTo) return null;
+            return await parent.getAssignedToUser();
+        }
     }
 
 };

@@ -1,0 +1,20 @@
+mutation UnassignChore($args: UnassignChoreInput) {
+  unassignChore(args: $args) {
+    id
+    assignedBy {
+      email
+      firstName
+      id
+      lastName
+      userName
+    }
+    assignedAt
+    assignedTo {
+      userName
+      lastName
+      id
+      firstName
+      email
+    }
+  }
+}

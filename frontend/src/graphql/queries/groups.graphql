@@ -30,6 +30,51 @@ query Groups {
       isRecurring
       dueDate
       status
+      createdBy {
+        userName
+        lastName
+        id
+        firstName
+        email
+      }
+      assignment {
+        id
+        assignedTo {
+          userName
+          lastName
+          id
+          firstName
+          email
+        }
+        assignedBy {
+          userName
+          lastName
+          id
+          firstName
+          email
+        }
+        assignedAt
+      }
+    }
+    groupInvites {
+      id
+      inviterUser {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+      invitedUser {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+      status
+      createdAt
+      respondedAt
     }
   }
 }

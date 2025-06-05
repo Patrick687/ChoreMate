@@ -8,6 +8,7 @@ type Chore {
   isRecurring: Boolean!
   dueDate: Date
   status: ChoreStatus!
+  assignment: ChoreAssignment!
 }
 
 enum ChoreStatus {
@@ -16,12 +17,29 @@ enum ChoreStatus {
   DONE
 }
 
+type ChoreAssignment {
+  id: ID!
+  assignedTo: User
+  assignedBy: User
+  assignedAt: Date!
+}
+
 type Mutation {
   createChore(args: CreateChoreInput): Chore!
   updateChoreInfo(args: UpdateChoreInfoInput): Chore!
   updateChoreDueDate(args: UpdateChoreDueDateInput): Chore!
   updateChoreStatus(args: UpdateChoreStatusInput): Chore!
   deleteChore(args: DeleteChoreInput): Boolean!
+  assignChore(args: AssignChoreInput): ChoreAssignment!
+  unassignChore(args: UnassignChoreInput): ChoreAssignment!
+}
+
+input AssignChoreInput {
+  choreId: ID!
+  assignedTo: ID!
+}
+input UnassignChoreInput {
+  choreId: ID!
 }
 
 input CreateChoreInput {

@@ -15,6 +15,11 @@ export type Scalars = {
   Date: { input: any; output: any; }
 };
 
+export type AssignChoreInput = {
+  assignedTo: Scalars['ID']['input'];
+  choreId: Scalars['ID']['input'];
+};
+
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   token: Scalars['String']['output'];
@@ -23,6 +28,7 @@ export type AuthPayload = {
 
 export type Chore = {
   __typename?: 'Chore';
+  assignment: ChoreAssignment;
   createdAt: Scalars['Date']['output'];
   createdBy: User;
   description: Maybe<Scalars['String']['output']>;
@@ -32,6 +38,14 @@ export type Chore = {
   isRecurring: Scalars['Boolean']['output'];
   status: ChoreStatus;
   title: Scalars['String']['output'];
+};
+
+export type ChoreAssignment = {
+  __typename?: 'ChoreAssignment';
+  assignedAt: Scalars['Date']['output'];
+  assignedBy: Maybe<User>;
+  assignedTo: Maybe<User>;
+  id: Scalars['ID']['output'];
 };
 
 export enum ChoreStatus {
@@ -95,6 +109,7 @@ export type InviteToGroupInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  assignChore: ChoreAssignment;
   createChore: Chore;
   createGroup: Group;
   deleteChore: Scalars['Boolean']['output'];
@@ -103,10 +118,16 @@ export type Mutation = {
   login: AuthPayload;
   respondToGroupInvite: GroupInvite;
   signup: AuthPayload;
+  unassignChore: ChoreAssignment;
   updateChoreDueDate: Chore;
   updateChoreInfo: Chore;
   updateChoreStatus: Chore;
   updateGroup: Group;
+};
+
+
+export type MutationAssignChoreArgs = {
+  args: InputMaybe<AssignChoreInput>;
 };
 
 
@@ -152,6 +173,11 @@ export type MutationSignupArgs = {
   lastName: Scalars['String']['input'];
   password: Scalars['String']['input'];
   userName: Scalars['String']['input'];
+};
+
+
+export type MutationUnassignChoreArgs = {
+  args: InputMaybe<UnassignChoreInput>;
 };
 
 
@@ -208,6 +234,10 @@ export type QueryGroupInvitesArgs = {
 export type RespondToGroupInviteInput = {
   inviteId: Scalars['ID']['input'];
   response: GroupInviteStatus;
+};
+
+export type UnassignChoreInput = {
+  choreId: Scalars['ID']['input'];
 };
 
 export type UpdateChoreDueDateInput = {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useUpdateChoreStatusMutation, type Chore, type ChoreStatus, type Group } from "../../../../graphql/generated";
 import { openModal } from "../../../../store/modal";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
 
     const dispatch = useDispatch();
     const chores = useSelector((state: RootState) => state.chores.byGroupId[groupId]);
+
+    const groupMembers = useSelector((state: RootState) =>
+        state.groups.groups.find(g => g.id === groupId)?.groupMembers || []
+    );
+
+    const [filter, setFilter] = useState<string>("all");
 
     // Group chores by status
     const columns: Record<ChoreStatus, Chore[]> = {

@@ -1,0 +1,20 @@
+mutation AssignChore($args: AssignChoreInput) {
+  assignChore(args: $args) {
+    id
+    assignedTo {
+      email
+      firstName
+      lastName
+      userName
+      id
+    }
+    assignedBy {
+      userName
+      lastName
+      id
+      firstName
+      email
+    }
+    assignedAt
+  }
+}
