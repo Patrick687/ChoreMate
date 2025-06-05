@@ -2,7 +2,8 @@ import { UUID } from "crypto";
 import { CreateGroupInput, DeleteGroupInput, QueryGroupArgs, UpdateGroupInput } from "../generated/graphql-types";
 import { GROUP_GROUP_MEMBER_ALIAS, GROUP_MEMBER_USER_ALIAS } from "../models";
 import { GroupMemberModel, GroupMemberModelAttributes, GroupMemberRole } from "../models/GroupMembersModel";
-import { Group, GroupModel, GroupsModelAttributes } from "../models/GroupModel";
+import { Group as GroupModel, GroupsModelAttributes } from "../models/GroupModel";
+import { GroupInvite as GroupInviteModel } from "../models/GroupInviteModel";
 import { UserModel, UserModelAttributes } from "../models/UserModel";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../utils/error/customErrors";
 import { ChoreModel } from "../models/ChoresModel";
@@ -15,18 +16,16 @@ async function groupsResolver(
     _: unknown,
     __: unknown,
     context: { user: { id: UUID; }; }
-): Promise<Group[]> {
-
-    const user = await userRepository.fetchUserByUserId(context.user.id, true);
-    if (!user) {
+): Promise<GroupModel[]> {
+    const userId = context.user.id;
+    if (!userId) {
         throw new UnauthorizedError(`Unauthorized. Please relog.`);
     }
-
-    const userAsGroupMembers = await user.getGroupMembers();
-
-    const groups: Group[] = [];
-    for (const gm of userAsGroupMembers) {
-        const group = await gm.getGroup();
+    const user = await userRepository.fetchUserByUserId(userId, true);
+    const groupMembers = await user.getGroupMembers();
+    const groups: GroupModel[] = [];
+    for (const groupMember of groupMembers) {
+        const group = await groupMember.getGroup();
         groups.push(group);
     }
 
@@ -37,15 +36,13 @@ async function groupResolver(
     _: unknown,
     { args }: { args: QueryGroupArgs; },
     context: { user: { id: UUID; }; }
-): Promise<Group> {
-    if (!context.user.id) {
+): Promise<GroupModel> {
+    const userId = context.user.id;
+    if (!userId) {
         throw new UnauthorizedError(`Unauthorized`);
     }
 
     const { id: idInput } = args;
-    if (!idInput) {
-        throw new BadRequestError(`Group ID is required`);
-    }
     if (!validator.isUUID(idInput)) {
         throw new BadRequestError(`Invalid Group ID format`);
     }
@@ -112,6 +109,10 @@ export const groupResolvers = {
         deleteGroup: groupMutations.deleteGroup,
     },
     Group: {
+        groupInvites: async (parent: GroupModel): Promise<GroupInviteModel[]> => {
+            const groupInvites = await parent.getGroupInvites();
+            return groupInvites;
+        },
         groupMembers: async (parent: GroupsModelAttributes) => {
             // parent.id is the groupId
             const groupMembers = await GroupMemberModel.findAll({

@@ -4,6 +4,7 @@ type User {
   email: String!
   firstName: String!
   lastName: String!
+  groupInvites: [GroupInvite!]!
 }
 
 type Query {

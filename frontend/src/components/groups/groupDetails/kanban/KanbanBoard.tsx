@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useUpdateChoreStatusMutation, type Chore, type ChoreStatus, type Group } from "../../../../graphql/generated";
 import { openModal } from "../../../../store/modal";
 import { useDispatch, useSelector } from "react-redux";

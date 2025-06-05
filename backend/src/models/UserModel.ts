@@ -8,6 +8,7 @@ import { Group } from "./GroupModel";
 import { GroupMember } from "./GroupMembersModel";
 import { Chore } from "./ChoresModel";
 import { ChoreAssignment } from "./ChoreAssignmentsModel";
+import { GroupInvite } from "./GroupInviteModel";
 
 
 export interface UserModelAttributes {
@@ -39,6 +40,10 @@ export class User extends Model<UserModelAttributes, UserModelCreationAttributes
     public getChoreAssignments!: HasManyGetAssociationsMixin<ChoreAssignment>;
     // assignedChores (assignedBy)
     public getAssignedChores!: HasManyGetAssociationsMixin<ChoreAssignment>;
+    // sentInvites (inviterUserId)
+    public getSentInvites!: HasManyGetAssociationsMixin<GroupInvite>;
+    // receivedInvites (invitedUserId)
+    public getReceivedInvites!: HasManyGetAssociationsMixin<GroupInvite>;
 }
 
 export const USER_TABLE_NAME = 'USR_USERS';

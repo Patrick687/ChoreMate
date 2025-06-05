@@ -1,0 +1,35 @@
+type GroupInvite {
+  id: ID!
+  group: Group!
+  inviterUser: User!
+  invitedUser: User!
+  status: GroupInviteStatus!
+  createdAt: Date!
+  respondedAt: Date
+}
+
+enum GroupInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+input InviteToGroupInput {
+  groupId: ID!
+  invitedUserId: ID!
+}
+
+input RespondToGroupInviteInput {
+  inviteId: ID!
+  response: GroupInviteStatus!
+}
+
+type Mutation {
+  inviteToGroup(args: InviteToGroupInput): GroupInvite!
+  respondToGroupInvite(args: RespondToGroupInviteInput): GroupInvite!
+}
+
+type Query {
+  groupInvites(groupId: ID!): [GroupInvite!]!
+  myGroupInvites: [GroupInvite!]!
+}

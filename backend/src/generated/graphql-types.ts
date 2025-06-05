@@ -65,9 +65,32 @@ export type Group = {
   chores: Array<Chore>;
   createdAt: Scalars['Date']['output'];
   createdBy: User;
+  groupInvites: Array<GroupInvite>;
   groupMembers: Array<User>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type GroupInvite = {
+  __typename?: 'GroupInvite';
+  createdAt: Scalars['Date']['output'];
+  group: Group;
+  id: Scalars['ID']['output'];
+  invitedUser: User;
+  inviterUser: User;
+  respondedAt: Maybe<Scalars['Date']['output']>;
+  status: GroupInviteStatus;
+};
+
+export enum GroupInviteStatus {
+  Accepted = 'ACCEPTED',
+  Declined = 'DECLINED',
+  Pending = 'PENDING'
+}
+
+export type InviteToGroupInput = {
+  groupId: Scalars['ID']['input'];
+  invitedUserId: Scalars['ID']['input'];
 };
 
 export type Mutation = {
@@ -76,7 +99,9 @@ export type Mutation = {
   createGroup: Group;
   deleteChore: Scalars['Boolean']['output'];
   deleteGroup: Scalars['Boolean']['output'];
+  inviteToGroup: GroupInvite;
   login: AuthPayload;
+  respondToGroupInvite: GroupInvite;
   signup: AuthPayload;
   updateChoreDueDate: Chore;
   updateChoreInfo: Chore;
@@ -105,9 +130,19 @@ export type MutationDeleteGroupArgs = {
 };
 
 
+export type MutationInviteToGroupArgs = {
+  args: InputMaybe<InviteToGroupInput>;
+};
+
+
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationRespondToGroupInviteArgs = {
+  args: InputMaybe<RespondToGroupInviteInput>;
 };
 
 
@@ -144,8 +179,10 @@ export type Query = {
   chore: Chore;
   chores: Array<Chore>;
   group: Group;
+  groupInvites: Array<GroupInvite>;
   groups: Array<Group>;
   me: Maybe<User>;
+  myGroupInvites: Array<GroupInvite>;
 };
 
 
@@ -161,6 +198,16 @@ export type QueryChoresArgs = {
 
 export type QueryGroupArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGroupInvitesArgs = {
+  groupId: Scalars['ID']['input'];
+};
+
+export type RespondToGroupInviteInput = {
+  inviteId: Scalars['ID']['input'];
+  response: GroupInviteStatus;
 };
 
 export type UpdateChoreDueDateInput = {
@@ -189,6 +236,7 @@ export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
+  groupInvites: Array<GroupInvite>;
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
   userName: Scalars['String']['output'];

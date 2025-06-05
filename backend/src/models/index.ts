@@ -4,6 +4,7 @@ import { GroupMember, GroupMemberModel } from './GroupMembersModel';
 import { Chore, ChoreModel } from './ChoresModel';
 import { OneTimeChore, OneTimeChoreModel } from './OneTimeChoresModel';
 import { ChoreAssignment, ChoreAssignmentModel } from './ChoreAssignmentsModel';
+import { GroupInvite, GroupInviteModel } from './GroupInviteModel';
 
 export const USER_GROUPS_ALIAS = 'createdGroups';
 UserModel.hasMany(Group, { foreignKey: 'createdBy', sourceKey: 'id', as: USER_GROUPS_ALIAS });
@@ -57,4 +58,28 @@ export const CHORE_ASSIGNMENT_ASSIGNER_ALIAS = 'choreAssigner';
 ChoreAssignmentModel.belongsTo(User, { foreignKey: 'assignedBy', targetKey: 'id', as: CHORE_ASSIGNMENT_ASSIGNER_ALIAS });
 
 export const USER_CHORE_ASSIGNED_BY_ALIAS = 'assignedChores';
-UserModel.hasMany(ChoreAssignment, { foreignKey: 'assignedBy', sourceKey: 'id', as: USER_CHORE_ASSIGNED_BY_ALIAS }); 
+UserModel.hasMany(ChoreAssignment, { foreignKey: 'assignedBy', sourceKey: 'id', as: USER_CHORE_ASSIGNED_BY_ALIAS });
+
+// GroupInvite belongsTo User (inviter)
+export const GROUP_INVITE_INVITER_USER_ALIAS = 'inviterUser';
+GroupInviteModel.belongsTo(User, { foreignKey: 'inviterUserId', as: GROUP_INVITE_INVITER_USER_ALIAS });
+
+// User hasMany GroupInvite (sent invites)
+export const USER_SENT_INVITES_ALIAS = 'sentInvites';
+UserModel.hasMany(GroupInvite, { foreignKey: 'inviterUserId', as: USER_SENT_INVITES_ALIAS });
+
+// GroupInvite belongsTo User (invitee)
+export const GROUP_INVITE_INVITED_USER_ALIAS = 'invitedUser';
+GroupInviteModel.belongsTo(User, { foreignKey: 'invitedUserId', as: GROUP_INVITE_INVITED_USER_ALIAS });
+
+// User hasMany GroupInvite (received invites)
+export const USER_RECEIVED_INVITES_ALIAS = 'receivedInvites';
+UserModel.hasMany(GroupInvite, { foreignKey: 'invitedUserId', as: USER_RECEIVED_INVITES_ALIAS });
+
+// Group hasMany GroupInvite (groupInvites)
+export const GROUP_GROUP_INVITES_ALIAS = 'groupInvites';
+GroupModel.hasMany(GroupInvite, { foreignKey: 'groupId', sourceKey: 'id', as: GROUP_GROUP_INVITES_ALIAS });
+
+// GroupInvite belongsTo Group (group)
+export const GROUP_INVITE_GROUP_ALIAS = 'group';
+GroupInviteModel.belongsTo(Group, { foreignKey: 'groupId', targetKey: 'id', as: GROUP_INVITE_GROUP_ALIAS });

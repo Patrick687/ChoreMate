@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch src/schema --ext graphql,ts --exec \"npm run codegen && ts-node src/index.ts\"",
-    "debug": "ts-node src/index.ts",
+    "debug": "node --inspect -r ts-node/register src/index.ts",
     "start": "ts-node src/index.ts",
     "codegen": "graphql-codegen --config ./src/config/codegen.ts",
     "testDbConnection": "ts-node src/config/db.ts",

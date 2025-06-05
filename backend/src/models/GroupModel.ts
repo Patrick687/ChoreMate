@@ -6,6 +6,7 @@ import { BadRequestError, NotFoundError } from "../utils/error/customErrors";
 import validator from "validator";
 import { GroupMember } from "./GroupMembersModel";
 import { Chore } from "./ChoresModel";
+import { GroupInvite } from "./GroupInviteModel";
 
 export interface GroupsModelAttributes {
     id: UUID;
@@ -32,6 +33,8 @@ export class Group extends Model<GroupsModelAttributes, GroupsModelCreationAttri
     public getGroupMembers!: HasManyGetAssociationsMixin<GroupMember>;
     // chores
     public getChores!: HasManyGetAssociationsMixin<Chore>;
+    // groupInvites
+    public getGroupInvites!: HasManyGetAssociationsMixin<GroupInvite>;
 }
 
 export const GroupModel = Group.init(

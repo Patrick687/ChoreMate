@@ -17,7 +17,11 @@ export interface GroupMemberModelAttributes {
     joinedAt: Date;
 }
 
-export interface GroupMemberModelCreationAttributes extends Omit<GroupMemberModelAttributes, 'id' | 'joinedAt'> { }
+export interface GroupMemberModelCreationAttributes {
+    groupId: GroupsModelAttributes['id'];
+    userId: UserModelAttributes['id'];
+    role?: GroupMemberRole;
+}
 
 export const GROUP_MEMBER_TABLE_NAME = "GRP_MEMBER";
 export const GROUP_MEMBER_MODEL_NAME = "GroupMember";
@@ -60,6 +64,7 @@ export const GroupMemberModel = GroupMember.init(
         },
         role: {
             type: DataTypes.ENUM(...Object.values(GroupMemberRole)),
+            defaultValue: GroupMemberRole.MEMBER,
             allowNull: false,
         },
         joinedAt: {
@@ -77,5 +82,10 @@ export const GroupMemberModel = GroupMember.init(
                 fields: ['groupId', 'userId']
             }
         ],
+        hooks: {
+            beforeCreate: (groupMember: GroupMember) => {
+                //TODO: Ensure that the user (if not the owner) has an invite that is set to accepted
+            }
+        }
     }
 );
