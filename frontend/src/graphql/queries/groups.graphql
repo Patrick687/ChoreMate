@@ -29,6 +29,7 @@ query Groups {
       createdAt
       isRecurring
       dueDate
+      status
     }
   }
 }

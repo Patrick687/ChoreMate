@@ -3,28 +3,9 @@ import { User } from '../models/UserModel';
 import { GroupModel } from '../models/GroupModel';
 import { ChoreModel } from '../models/ChoresModel';
 import { GroupMemberModel, GroupMemberRole } from '../models/GroupMembersModel';
-import { UUID } from 'crypto';
-import { UnauthorizedError } from '../utils/error/customErrors';
 import { OneTimeChoreModel } from '../models/OneTimeChoresModel';
+import { ChoreStatus } from '../generated/graphql-types';
 
-async function testChoreCreatorValidation(groupId: UUID, nonMemberUserId: UUID) {
-    try {
-        await ChoreModel.create({
-            groupId,
-            title: 'Should Fail',
-            description: 'This should not be created',
-            isRecurring: false,
-            createdBy: nonMemberUserId
-        });
-        console.error('❌ Test failed: Chore was created by a non-member!');
-    } catch (err) {
-        if (err instanceof UnauthorizedError && err.message.includes('must be a member')) {
-            console.log('✅ Test passed: Chore creation blocked for non-member.');
-        } else {
-            console.error('❌ Test failed with unexpected error:', err);
-        }
-    }
-}
 
 async function seed() {
     try {
@@ -96,7 +77,8 @@ async function seed() {
 
         await OneTimeChoreModel.create({
             choreId: chore2.id,
-            dueDate: new Date('2023-11-15T10:00:00Z') // Example due date
+            dueDate: new Date('2023-11-15T10:00:00Z'), // Example due date
+            status: ChoreStatus.Done
         });
 
         const chore3 = await ChoreModel.create({
@@ -109,21 +91,10 @@ async function seed() {
 
         await OneTimeChoreModel.create({
             choreId: chore3.id,
-            dueDate: new Date('2023-12-01T12:00:00Z') // Example due date
+            dueDate: new Date('2023-12-01T12:00:00Z'), // Example due date
+            status: ChoreStatus.InProgress
         });
 
-
-        // Create a user who sis NOT a member of group1
-        const outsider = await User.create({
-            firstName: 'Charlie',
-            lastName: 'Outsider',
-            userName: 'charlieoutsider',
-            email: 'charlie@example.com',
-            password: 'Password3!'
-        });
-
-        // Test: Try to create a chore in group1 by outsider (should fail)
-        await testChoreCreatorValidation(group1.id, outsider.id);
 
         console.log('✅ Seed complete!');
     } catch (err) {

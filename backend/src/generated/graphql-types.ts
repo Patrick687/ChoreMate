@@ -30,8 +30,15 @@ export type Chore = {
   group: Group;
   id: Scalars['ID']['output'];
   isRecurring: Scalars['Boolean']['output'];
+  status: ChoreStatus;
   title: Scalars['String']['output'];
 };
+
+export enum ChoreStatus {
+  Done = 'DONE',
+  InProgress = 'IN_PROGRESS',
+  Todo = 'TODO'
+}
 
 export type CreateChoreInput = {
   description: InputMaybe<Scalars['String']['input']>;
@@ -73,6 +80,7 @@ export type Mutation = {
   signup: AuthPayload;
   updateChoreDueDate: Chore;
   updateChoreInfo: Chore;
+  updateChoreStatus: Chore;
   updateGroup: Group;
 };
 
@@ -122,6 +130,11 @@ export type MutationUpdateChoreInfoArgs = {
 };
 
 
+export type MutationUpdateChoreStatusArgs = {
+  args: InputMaybe<UpdateChoreStatusInput>;
+};
+
+
 export type MutationUpdateGroupArgs = {
   args: InputMaybe<UpdateGroupInput>;
 };
@@ -159,6 +172,11 @@ export type UpdateChoreInfoInput = {
   choreId: Scalars['ID']['input'];
   description: InputMaybe<Scalars['String']['input']>;
   title: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateChoreStatusInput = {
+  choreId: Scalars['ID']['input'];
+  status: ChoreStatus;
 };
 
 export type UpdateGroupInput = {

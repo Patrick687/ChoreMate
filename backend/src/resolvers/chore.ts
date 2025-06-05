@@ -1,12 +1,7 @@
-import { Chore, CreateChoreInput } from "../generated/graphql-types";
+import { ChoreStatus, CreateChoreInput } from "../generated/graphql-types";
 import { Chore as ChoreModel } from "../models/ChoresModel";
 import choreHelper from "../helpers/group/chore/choreHelper";
-import { GROUP_GROUP_MEMBER_ALIAS, GROUP_MEMBER_USER_ALIAS } from "../models";
-import { ChoreModelAttributes } from "../models/ChoresModel";
-import { GroupMemberModel } from "../models/GroupMembersModel";
-import { GroupModel } from "../models/GroupModel";
 import { OneTimeChoreModel } from "../models/OneTimeChoresModel";
-import { User, UserModel } from "../models/UserModel";
 import choreRepository from "../repositories/group/chore/choreRepository";
 import { BadRequestError, InternalServerError, NotFoundError, UnauthorizedError } from "../utils/error/customErrors";
 import { UUID } from "crypto";
@@ -14,7 +9,6 @@ import validator from "validator";
 import groupRepository from "../repositories/group/groupRepository";
 import userRepository from "../repositories/auth/userRepository";
 import groupHelper from "../helpers/group/groupHelper";
-import oneTimeChoreRepository from "../repositories/group/chore/oneTimeChoreRepository";
 import { sequelize } from "../config/db";
 
 const Query = {
@@ -182,10 +176,47 @@ export const choreResolvers = {
             }
 
             return chore;
+        },
+
+        updateChoreStatus: async function updateChoreStatus(
+            _: unknown,
+            args: { args: { choreId: string; status: ChoreStatus; }; },
+            context: { user?: { id: UUID; }; }
+        ): Promise<ChoreModel> {
+            const userId = context.user?.id;
+            if (!userId) {
+                throw new Error("Not authenticated");
+            }
+
+            const { choreId: choreIdInput, status: choreStatusInput } = args.args;
+            if (!validator.isUUID(choreIdInput)) {
+                throw new BadRequestError(`Invalid chore ID: ${choreIdInput}`);
+            }
+            const choreId = choreIdInput as UUID;
+
+            //Validate status to be one of the enum values of the import ChoreStatus
+            if (!Object.values(ChoreStatus).includes(choreStatusInput)) {
+                throw new BadRequestError(`Invalid chore status: ${choreStatusInput}`);
+            }
+            const status = choreStatusInput as ChoreStatus;
+
+            const chore = await choreRepository.fetchChoreByChoreId(choreId, true);
+            const oneTimeChore = await chore.getOneTimeChores().then(otc => otc.length > 0 ? otc[0] : null);
+            if (!oneTimeChore) {
+                throw new NotFoundError(`One-time chore not found for chore ID: ${choreId}`);
+            }
+
+            oneTimeChore.update({ status: status });
+
+            return chore;
         }
     },
 
     Chore: {
+        status: async (parent: ChoreModel): Promise<ChoreStatus> => {
+            return await parent.getOneTimeChores()
+                .then(otc => otc.length > 0 ? otc[0].status : ChoreStatus.Todo);
+        },
         dueDate: async (parent: ChoreModel): Promise<Date | null> => {
             return await parent.getOneTimeChores()
                 .then(otc => otc.length > 0 ? otc[0].dueDate : null);

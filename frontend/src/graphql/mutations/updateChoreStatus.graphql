@@ -1,0 +1,6 @@
+mutation UpdateChoreStatus($args: UpdateChoreStatusInput) {
+  updateChoreStatus(args: $args) {
+    id
+    status
+  }
+}
