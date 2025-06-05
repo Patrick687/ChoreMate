@@ -63,7 +63,7 @@ async function seed() {
             groupId: group1.id,
             title: 'Take out trash',
             description: 'Take out the trash every Monday',
-            isRecurring: true,
+            isRecurring: false,
             createdBy: user1.id
         });
 

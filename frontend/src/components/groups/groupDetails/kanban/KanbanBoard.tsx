@@ -1,16 +1,20 @@
-import React from "react";
-import type { Chore, ChoreStatus, Group } from "../../../../graphql/generated";
+import React, { useEffect } from "react";
+import { useUpdateChoreStatusMutation, type Chore, type ChoreStatus, type Group } from "../../../../graphql/generated";
 import { openModal } from "../../../../store/modal";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import KanbanColumns from "./KanbanColumns";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
+import { updateChoreStatus } from "../../../../store/groups";
 
 interface KanbanBoardProps {
     groupId: Group['id'];
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
+
+    const [updateChoreStatusMutation] = useUpdateChoreStatusMutation();
+
     const dispatch = useDispatch();
     const group = useSelector((state: RootState) =>
         state.groups.groups.find(g => g.id === groupId)
@@ -22,6 +26,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
         IN_PROGRESS: [],
         DONE: [],
     };
+
     group.chores.forEach(chore => {
         columns[chore.status].push(chore);
     });
@@ -32,17 +37,36 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
 
     async function onDragEnd(result: DropResult) {
         const { source, destination, draggableId } = result;
-        if (!destination) {
-            console.log("Dropped outside of any droppable area");
-            return;
-        }
+        if (!destination) return;
+
         const sourceStatus = source.droppableId as ChoreStatus;
         const destStatus = destination.droppableId as ChoreStatus;
-        if (sourceStatus !== destStatus) {
 
-            console.log(`Moving chore ${draggableId} from ${sourceStatus} to ${destStatus}`);
-        } else {
-            console.log("Dropped in the same column, no action taken");
+        if (sourceStatus !== destStatus) {
+            // Optimistically update
+            dispatch(updateChoreStatus({
+                choreId: draggableId,
+                status: destStatus
+            }));
+
+            try {
+                await updateChoreStatusMutation({
+                    variables: {
+                        args: {
+                            choreId: draggableId,
+                            status: destStatus
+                        }
+                    }
+                });
+            } catch (error) {
+                // Revert on error
+                dispatch(updateChoreStatus({
+                    choreId: draggableId,
+                    status: sourceStatus
+                }));
+                // Optionally show an error message to the user
+                alert("Failed to update chore status. Please try again.");
+            }
         }
     }
 
