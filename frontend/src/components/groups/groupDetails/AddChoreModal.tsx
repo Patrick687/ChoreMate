@@ -44,7 +44,7 @@ const AddChoreModal: React.FC<AddChoreModalProps> = ({ groupId }) => {
                     groupId,
                     chore: {
                         ...data.createChore,
-                        group
+                        group,
                     }
                 }));
             }

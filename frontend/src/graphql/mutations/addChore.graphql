@@ -13,5 +13,6 @@ mutation createChore($args: CreateChoreInput!) {
     dueDate
     createdAt
     isRecurring
+    status
   }
 }

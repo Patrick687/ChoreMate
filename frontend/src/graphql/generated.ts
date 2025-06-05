@@ -202,7 +202,7 @@ export type CreateChoreMutationVariables = Exact<{
 }>;
 
 
-export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, dueDate?: any | null, createdAt: any, isRecurring: boolean, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+export type CreateChoreMutation = { __typename?: 'Mutation', createChore: { __typename?: 'Chore', id: string, title: string, description?: string | null, dueDate?: any | null, createdAt: any, isRecurring: boolean, status: ChoreStatus, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -266,6 +266,7 @@ export const CreateChoreDocument = gql`
     dueDate
     createdAt
     isRecurring
+    status
   }
 }
     `;
