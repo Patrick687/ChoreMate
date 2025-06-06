@@ -3,7 +3,7 @@ import { z } from "zod";
 import { type Chore, type User } from "../../graphql/generated";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
-import EditChoreDetail from "./EditChoreDetail";
+import EditChoreDetail from "./EditChoreDetailBackup";
 
 interface ChoreDetailModalProps {
     choreId: Chore['id'];

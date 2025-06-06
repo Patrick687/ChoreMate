@@ -82,25 +82,14 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
                 const group = await chore.getGroup();
                 const groupMembers = await group.getGroupMembers();
 
-                //If AssignedTo is null, then assignedBy must be null as well
-                if (assignment.assignedTo === null && assignment.assignedBy !== null) {
-                    throw new InternalServerError("If assignedTo is null, then assignedBy must also be null");
-                }
-                if (assignment.assignedTo !== null && assignment.assignedBy === null) {
-                    throw new InternalServerError("If assignedBy is null, then assignedTo must also be null");
-                }
-
-                if (assignment.assignedTo === null && assignment.assignedBy === null) {
-                    assignment.assignedAt = new Date();
-                    return;
-                }
-
 
                 //Check if assignedTo is a member of the group
-                const assignedToUser = await assignment.getAssignedToUser();
-                const isAssignedToMember = groupMembers.some(member => member.userId === assignedToUser.id);
-                if (!isAssignedToMember) {
-                    throw new UnauthorizedError(`User ${assignedToUser.id} is not a member of the group ${group.id}`);
+                const assignedToUser = assignment.assignedTo ? await assignment.getAssignedToUser() : null;
+                if (assignedToUser) {
+                    const isAssignedToMember = groupMembers.some(member => member.userId === assignedToUser.id);
+                    if (!isAssignedToMember) {
+                        throw new UnauthorizedError(`User ${assignedToUser.id} is not a member of the group ${group.id}`);
+                    }
                 }
                 //Check if assignedBy is a member of the group
                 const assignedByUser = await assignment.getChoreAssigner();
@@ -111,29 +100,18 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
                 assignment.assignedAt = new Date();
             },
             beforeUpdate: async (assignment: ChoreAssignment) => {
-                //Check assignedTo and assignedBy are in the group of the chore
                 const chore = await assignment.getChore();
                 const group = await chore.getGroup();
                 const groupMembers = await group.getGroupMembers();
 
-                //If AssignedTo is null, then assignedBy must be null as well
-                if (assignment.assignedTo === null && assignment.assignedBy !== null) {
-                    throw new InternalServerError("If assignedTo is null, then assignedBy must also be null");
-                }
-                if (assignment.assignedTo !== null && assignment.assignedBy === null) {
-                    throw new InternalServerError("If assignedBy is null, then assignedTo must also be null");
-                }
-
-                if (assignment.assignedTo === null && assignment.assignedBy === null) {
-                    assignment.assignedAt = new Date();
-                    return;
-                }
 
                 //Check if assignedTo is a member of the group
-                const assignedToUser = await assignment.getAssignedToUser();
-                const isAssignedToMember = groupMembers.some(member => member.userId === assignedToUser.id);
-                if (!isAssignedToMember) {
-                    throw new UnauthorizedError(`User ${assignedToUser.id} is not a member of the group ${group.id}`);
+                const assignedToUser = assignment.assignedTo ? await assignment.getAssignedToUser() : null;
+                if (assignedToUser) {
+                    const isAssignedToMember = groupMembers.some(member => member.userId === assignedToUser.id);
+                    if (!isAssignedToMember) {
+                        throw new UnauthorizedError(`User ${assignedToUser.id} is not a member of the group ${group.id}`);
+                    }
                 }
                 //Check if assignedBy is a member of the group
                 const assignedByUser = await assignment.getChoreAssigner();

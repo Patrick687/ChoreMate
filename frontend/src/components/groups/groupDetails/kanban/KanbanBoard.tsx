@@ -36,7 +36,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ groupId }) => {
     });
 
     function handleChoreClick(choreId: Chore['id']) {
-        dispatch(openModal({ mode: "choreDetail", props: { choreId, members: group.groupMembers } }));
+        dispatch(openModal({ mode: "choreDetail", props: { choreId, groupId } }));
     }
 
     async function onDragEnd(result: DropResult) {

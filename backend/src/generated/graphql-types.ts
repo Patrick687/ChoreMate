@@ -16,7 +16,7 @@ export type Scalars = {
 };
 
 export type AssignChoreInput = {
-  assignedTo: Scalars['ID']['input'];
+  assignedTo: InputMaybe<Scalars['ID']['input']>;
   choreId: Scalars['ID']['input'];
 };
 

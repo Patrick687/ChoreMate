@@ -14,7 +14,7 @@ import GroupsPage from './pages/GroupsPage';
 import GroupDetailsPage from './pages/GroupDetailsPage';
 import AddChoreModal from './components/groups/groupDetails/AddChoreModal';
 import ErrorModal from './components/utils/error/ErrorModal';
-import ChoreDetailModal from './components/chore/ChoreDetail';
+import ChoreDetailView from './components/chore/detailView/ChoreDetailView';
 
 function App() {
   const { isOpen, mode, modalProps } = useSelector((state: RootState) => state.modal);
@@ -56,8 +56,8 @@ function App() {
         {mode === "addChore" && modalProps && modalProps.userId && modalProps.groupId && (
           <AddChoreModal groupId={modalProps.groupId} />
         )}
-        {mode === "choreDetail" && modalProps && modalProps.choreId && modalProps.members &&
-          <ChoreDetailModal choreId={modalProps.choreId} members={modalProps.members} />
+        {mode === "choreDetail" && modalProps && modalProps.choreId && modalProps.groupId &&
+          <ChoreDetailView choreId={modalProps.choreId} groupId={modalProps.groupId} />
         }
         {mode === "relogError" && <ErrorModal message={modalProps?.message} />}
       </Modal>

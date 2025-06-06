@@ -224,10 +224,10 @@ export const choreResolvers = {
             }
             const assignedByUserId = userId;
             const { assignedTo: assignedToInput, choreId: choreIdInput } = args.args;
-            if (!validator.isUUID(assignedToInput)) {
+            if (assignedToInput && !validator.isUUID(assignedToInput)) {
                 throw new BadRequestError(`Invalid user ID: ${assignedToInput}`);
             }
-            const assignedToUserId = assignedToInput as UUID;
+            const assignedToUserId = assignedToInput as UUID | null;
             if (!validator.isUUID(choreIdInput)) {
                 throw new BadRequestError(`Invalid chore ID: ${choreIdInput}`);
             }
@@ -237,11 +237,11 @@ export const choreResolvers = {
             const group = await chore.getGroup();
             const groupMembers = await group.getGroupMembers();
             const isAssignedByUserInGroup = groupMembers.some(member => member.userId === assignedByUserId);
-            const isAssignedToUserInGroup = groupMembers.some(member => member.userId === assignedToUserId);
+            const isAssignedToUserInGroup = assignedToUserId ? groupMembers.some(member => member.userId === assignedToUserId) : null;
             if (!isAssignedByUserInGroup) {
                 throw new UnauthorizedError('You are not in this group. Cannot assign chore.');
             }
-            if (!isAssignedToUserInGroup) {
+            if (isAssignedToUserInGroup === undefined) {
                 throw new UnauthorizedError('The user you are trying to assign the chore to is not in this group.');
             }
             const transaction = await sequelize.transaction();
@@ -342,6 +342,9 @@ export const choreResolvers = {
         assignedTo: async (parent: ChoreAssignmentModel) => {
             if (!parent.assignedTo) return null;
             return await parent.getAssignedToUser();
+        },
+        assignedAt: async (parent: ChoreAssignmentModel): Promise<Date> => {
+            return new Date(parent.assignedAt);
         }
     }
 

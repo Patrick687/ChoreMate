@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { Chore, UpdateChoreDueDateInput, UpdateChoreInfoInput, UpdateChoreStatusInput } from "../graphql/generated";
+import type { Chore, UpdateChoreDueDateInput, UpdateChoreInfoInput, UpdateChoreStatusInput, Group, ChoreAssignment } from "../graphql/generated";
 
 interface ChoresState {
     byGroupId: Record<string, Chore[]>;
@@ -52,7 +52,25 @@ const choresSlice = createSlice({
                 }
             }
         },
-    },
+        assignChore: (state, action: PayloadAction<{ groupId: Group['id'], choreId: Chore['id'], assignment: ChoreAssignment; }>) => {
+            const { choreId, groupId } = action.payload;
+            const { assignedTo, assignedBy, id: choreAssignmentId, assignedAt } = action.payload.assignment;
+            const chores = state.byGroupId[groupId];
+            if (!chores) {
+                throw new Error(`Redux State Error: No chores found for groupId ${groupId}`);
+            }
+            const chore = chores.find((c) => c.id === choreId);
+            if (!chore) {
+                throw new Error(`Redux State Error: No chore found with choreId ${choreId} in groupId ${groupId}`);
+            }
+            chore.assignment = {
+                assignedTo: assignedTo || null,
+                assignedBy: assignedBy || null,
+                id: choreAssignmentId,
+                assignedAt: assignedAt || new Date(),
+            };
+        }
+    }
 });
 
 export const {
@@ -61,6 +79,7 @@ export const {
     updateChoreInfo,
     updateChoreDueDate,
     updateChoreStatus,
+    assignChore
 } = choresSlice.actions;
 
 export default choresSlice.reducer;
