@@ -82,7 +82,6 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
                 const group = await chore.getGroup();
                 const groupMembers = await group.getGroupMembers();
 
-
                 //Check if assignedTo is a member of the group
                 const assignedToUser = assignment.assignedTo ? await assignment.getAssignedToUser() : null;
                 if (assignedToUser) {
@@ -92,14 +91,17 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
                     }
                 }
                 //Check if assignedBy is a member of the group
-                const assignedByUser = await assignment.getChoreAssigner();
-                const isAssignedByMember = groupMembers.some(member => member.userId === assignedByUser.id);
-                if (!isAssignedByMember) {
-                    throw new UnauthorizedError(`User ${assignedByUser.id} is not a member of the group ${group.id}`);
+                const assignedByUser = assignment.assignedBy ? await assignment.getChoreAssigner() : null;
+                if (assignedByUser) {
+                    const isAssignedByMember = groupMembers.some(member => member.userId === assignedByUser.id);
+                    if (!isAssignedByMember) {
+                        throw new UnauthorizedError(`User ${assignedByUser.id} is not a member of the group ${group.id}`);
+                    }
                 }
                 assignment.assignedAt = new Date();
             },
             beforeUpdate: async (assignment: ChoreAssignment) => {
+                //Check assignedTo and assignedBy are in the group of the chore
                 const chore = await assignment.getChore();
                 const group = await chore.getGroup();
                 const groupMembers = await group.getGroupMembers();
@@ -114,10 +116,12 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
                     }
                 }
                 //Check if assignedBy is a member of the group
-                const assignedByUser = await assignment.getChoreAssigner();
-                const isAssignedByMember = groupMembers.some(member => member.userId === assignedByUser.id);
-                if (!isAssignedByMember) {
-                    throw new UnauthorizedError(`User ${assignedByUser.id} is not a member of the group ${group.id}`);
+                const assignedByUser = assignment.assignedBy ? await assignment.getChoreAssigner() : null;
+                if (assignedByUser) {
+                    const isAssignedByMember = groupMembers.some(member => member.userId === assignedByUser.id);
+                    if (!isAssignedByMember) {
+                        throw new UnauthorizedError(`User ${assignedByUser.id} is not a member of the group ${group.id}`);
+                    }
                 }
                 assignment.assignedAt = new Date();
             },

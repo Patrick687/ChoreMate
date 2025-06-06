@@ -73,7 +73,7 @@ const GroupDetailsPage: React.FC = () => {
                 <h1 className="text-2xl font-bold">{group.name}</h1>
                 <div>
                     <button
-                        onClick={() => dispatch(openModal({ mode: "inviteMember", props: { groupId, userId } }))}
+                        onClick={() => dispatch(openModal({ mode: "inviteMember", props: { groupId } }))}
                         className="mr-2 px-4 py-2 bg-indigo-600 text-white rounded"
                     >
                         Invite Member

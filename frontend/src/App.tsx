@@ -15,6 +15,7 @@ import GroupDetailsPage from './pages/GroupDetailsPage';
 import AddChoreModal from './components/groups/groupDetails/AddChoreModal';
 import ErrorModal from './components/utils/error/ErrorModal';
 import ChoreDetailView from './components/chore/detailView/ChoreDetailView';
+import InviteMember from './components/groups/groupDetails/InviteMember';
 
 function App() {
   const { isOpen, mode, modalProps } = useSelector((state: RootState) => state.modal);
@@ -52,12 +53,14 @@ function App() {
       >
         {mode === "signup" && <SignupForm />}
         {mode === "login" && <LoginForm />}
-        {/* {mode === "inviteMember" && <InviteMemberModal {...modalProps} />} */}
         {mode === "addChore" && modalProps && modalProps.userId && modalProps.groupId && (
           <AddChoreModal groupId={modalProps.groupId} />
         )}
         {mode === "choreDetail" && modalProps && modalProps.choreId && modalProps.groupId &&
           <ChoreDetailView choreId={modalProps.choreId} groupId={modalProps.groupId} />
+        }
+        {mode === "inviteMember" && modalProps && modalProps.groupId &&
+          <InviteMember groupId={modalProps.groupId} />
         }
         {mode === "relogError" && <ErrorModal message={modalProps?.message} />}
       </Modal>

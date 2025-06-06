@@ -47,18 +47,25 @@ const Mutation = {
             throw new UnauthorizedError("Not authenticated");
         }
         //Parse, validate
-        const { groupId: groupIdInput, invitedUserId: invitedUserIdInput } = args.args;
+        const { groupId: groupIdInput, invitedUserName: invitedUserNameInput } = args.args;
         if (!validator.isUUID(groupIdInput)) {
             throw new BadRequestError(`Invalid group ID: ${groupIdInput}`);
         }
         const groupId = groupIdInput as UUID;
-        if (!validator.isUUID(invitedUserIdInput)) {
-            throw new BadRequestError(`Invalid invited user ID: ${invitedUserIdInput}`);
+        if (!invitedUserNameInput) {
+            throw new BadRequestError(`Invited user name is required.`);
         }
-        const invitedUserId = invitedUserIdInput as UUID;
+        const invitedUserName = invitedUserNameInput;
 
         // Fetch the invited user
-        const invitedUser = await userRepository.fetchUserByUserId(invitedUserId, true);
+        const invitedUser = await UserModel.findOne({
+            where: {
+                userName: invitedUserName
+            }
+        });
+        if (!invitedUser) {
+            throw new BadRequestError(`User with username ${invitedUserName} not found.`);
+        }
 
         // Fetch the group
         const group = await groupRepository.fetchGroupByGroupId(groupId, true);

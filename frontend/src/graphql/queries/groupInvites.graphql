@@ -1,0 +1,41 @@
+query MyGroupInvites {
+  myGroupInvites {
+    id
+    group {
+      id
+      name
+      createdBy {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+      createdAt
+      groupMembers {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+    }
+    inviterUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    invitedUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    status
+    createdAt
+    respondedAt
+  }
+}

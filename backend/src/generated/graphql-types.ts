@@ -104,7 +104,7 @@ export enum GroupInviteStatus {
 
 export type InviteToGroupInput = {
   groupId: Scalars['ID']['input'];
-  invitedUserId: Scalars['ID']['input'];
+  invitedUserName: Scalars['String']['input'];
 };
 
 export type Mutation = {

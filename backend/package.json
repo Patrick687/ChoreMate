@@ -8,7 +8,7 @@
     "start": "ts-node src/index.ts",
     "codegen": "graphql-codegen --config ./src/config/codegen.ts",
     "testDbConnection": "ts-node src/config/db.ts",
-    "seedData": "ts-node src/data/seed.ts"
+    "seedData": "node --inspect -r ts-node/register src/data/seed.ts"
   },
   "keywords": [],
   "author": "",

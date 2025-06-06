@@ -16,7 +16,7 @@ enum GroupInviteStatus {
 
 input InviteToGroupInput {
   groupId: ID!
-  invitedUserId: ID!
+  invitedUserName: String!
 }
 
 input RespondToGroupInviteInput {

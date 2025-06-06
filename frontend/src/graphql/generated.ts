@@ -107,7 +107,7 @@ export enum GroupInviteStatus {
 
 export type InviteToGroupInput = {
   groupId: Scalars['ID']['input'];
-  invitedUserId: Scalars['ID']['input'];
+  invitedUserName: Scalars['String']['input'];
 };
 
 export type Mutation = {
@@ -289,13 +289,20 @@ export type AssignChoreMutationVariables = Exact<{
 
 export type AssignChoreMutation = { __typename?: 'Mutation', assignChore: { __typename?: 'ChoreAssignment', id: string, assignedAt: any, assignedTo?: { __typename?: 'User', email: string, firstName: string, lastName: string, userName: string, id: string } | null, assignedBy?: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string } | null } };
 
+export type InviteToGroupMutationVariables = Exact<{
+  args?: InputMaybe<InviteToGroupInput>;
+}>;
+
+
+export type InviteToGroupMutation = { __typename?: 'Mutation', inviteToGroup: { __typename?: 'GroupInvite', status: GroupInviteStatus, respondedAt?: any | null, id: string, inviterUser: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string }, invitedUser: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string }, group: { __typename?: 'Group', name: string, id: string } } };
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string, groupInvites: Array<{ __typename?: 'GroupInvite', createdAt: any, id: string, respondedAt?: any | null, status: GroupInviteStatus, group: { __typename?: 'Group', id: string, name: string }, invitedUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, inviterUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } }> } } };
 
 export type SignupMutationVariables = Exact<{
   userName: Scalars['String']['input'];
@@ -335,6 +342,11 @@ export type UpdateChoreStatusMutationVariables = Exact<{
 
 
 export type UpdateChoreStatusMutation = { __typename?: 'Mutation', updateChoreStatus: { __typename?: 'Chore', id: string, status: ChoreStatus } };
+
+export type MyGroupInvitesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyGroupInvitesQuery = { __typename?: 'Query', myGroupInvites: Array<{ __typename?: 'GroupInvite', id: string, status: GroupInviteStatus, createdAt: any, respondedAt?: any | null, group: { __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }> }, inviterUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, invitedUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } }> };
 
 export type GroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -436,6 +448,59 @@ export function useAssignChoreMutation(baseOptions?: Apollo.MutationHookOptions<
 export type AssignChoreMutationHookResult = ReturnType<typeof useAssignChoreMutation>;
 export type AssignChoreMutationResult = Apollo.MutationResult<AssignChoreMutation>;
 export type AssignChoreMutationOptions = Apollo.BaseMutationOptions<AssignChoreMutation, AssignChoreMutationVariables>;
+export const InviteToGroupDocument = gql`
+    mutation InviteToGroup($args: InviteToGroupInput) {
+  inviteToGroup(args: $args) {
+    status
+    respondedAt
+    inviterUser {
+      userName
+      lastName
+      id
+      firstName
+      email
+    }
+    invitedUser {
+      userName
+      lastName
+      id
+      firstName
+      email
+    }
+    id
+    group {
+      name
+      id
+    }
+  }
+}
+    `;
+export type InviteToGroupMutationFn = Apollo.MutationFunction<InviteToGroupMutation, InviteToGroupMutationVariables>;
+
+/**
+ * __useInviteToGroupMutation__
+ *
+ * To run a mutation, you first call `useInviteToGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInviteToGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [inviteToGroupMutation, { data, loading, error }] = useInviteToGroupMutation({
+ *   variables: {
+ *      args: // value for 'args'
+ *   },
+ * });
+ */
+export function useInviteToGroupMutation(baseOptions?: Apollo.MutationHookOptions<InviteToGroupMutation, InviteToGroupMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InviteToGroupMutation, InviteToGroupMutationVariables>(InviteToGroupDocument, options);
+      }
+export type InviteToGroupMutationHookResult = ReturnType<typeof useInviteToGroupMutation>;
+export type InviteToGroupMutationResult = Apollo.MutationResult<InviteToGroupMutation>;
+export type InviteToGroupMutationOptions = Apollo.BaseMutationOptions<InviteToGroupMutation, InviteToGroupMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -445,6 +510,30 @@ export const LoginDocument = gql`
       email
       firstName
       lastName
+      groupInvites {
+        createdAt
+        group {
+          id
+          name
+        }
+        id
+        invitedUser {
+          id
+          userName
+          email
+          firstName
+          lastName
+        }
+        inviterUser {
+          id
+          userName
+          email
+          firstName
+          lastName
+        }
+        respondedAt
+        status
+      }
     }
     token
   }
@@ -678,6 +767,81 @@ export function useUpdateChoreStatusMutation(baseOptions?: Apollo.MutationHookOp
 export type UpdateChoreStatusMutationHookResult = ReturnType<typeof useUpdateChoreStatusMutation>;
 export type UpdateChoreStatusMutationResult = Apollo.MutationResult<UpdateChoreStatusMutation>;
 export type UpdateChoreStatusMutationOptions = Apollo.BaseMutationOptions<UpdateChoreStatusMutation, UpdateChoreStatusMutationVariables>;
+export const MyGroupInvitesDocument = gql`
+    query MyGroupInvites {
+  myGroupInvites {
+    id
+    group {
+      id
+      name
+      createdBy {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+      createdAt
+      groupMembers {
+        id
+        userName
+        email
+        firstName
+        lastName
+      }
+    }
+    inviterUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    invitedUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    status
+    createdAt
+    respondedAt
+  }
+}
+    `;
+
+/**
+ * __useMyGroupInvitesQuery__
+ *
+ * To run a query within a React component, call `useMyGroupInvitesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyGroupInvitesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyGroupInvitesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyGroupInvitesQuery(baseOptions?: Apollo.QueryHookOptions<MyGroupInvitesQuery, MyGroupInvitesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MyGroupInvitesQuery, MyGroupInvitesQueryVariables>(MyGroupInvitesDocument, options);
+      }
+export function useMyGroupInvitesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyGroupInvitesQuery, MyGroupInvitesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MyGroupInvitesQuery, MyGroupInvitesQueryVariables>(MyGroupInvitesDocument, options);
+        }
+export function useMyGroupInvitesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MyGroupInvitesQuery, MyGroupInvitesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MyGroupInvitesQuery, MyGroupInvitesQueryVariables>(MyGroupInvitesDocument, options);
+        }
+export type MyGroupInvitesQueryHookResult = ReturnType<typeof useMyGroupInvitesQuery>;
+export type MyGroupInvitesLazyQueryHookResult = ReturnType<typeof useMyGroupInvitesLazyQuery>;
+export type MyGroupInvitesSuspenseQueryHookResult = ReturnType<typeof useMyGroupInvitesSuspenseQuery>;
+export type MyGroupInvitesQueryResult = Apollo.QueryResult<MyGroupInvitesQuery, MyGroupInvitesQueryVariables>;
 export const GroupsDocument = gql`
     query Groups {
   groups {
