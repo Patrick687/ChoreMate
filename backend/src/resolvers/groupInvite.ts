@@ -11,6 +11,13 @@ import groupHelper from "../helpers/group/groupHelper";
 import { GroupMember } from "../models/GroupMembersModel";
 import { sequelize } from "../config/db";
 import { UserContext } from "../middleware/context";
+import { pubsub } from "../utils/pubsub/pubsub";
+import { send } from "process";
+
+const GROUP_INVITE_ADDED = 'GROUP_INVITE_ADDED';
+const GROUP_INVITE_RESPONDED = 'GROUP_INVITE_RESPONDED';
+
+
 
 const Query = {
     groupInvites: async function groupInvites(_: unknown, args: { groupId: string; }, context: UserContext): Promise<GroupInviteModel[]> {
@@ -36,8 +43,27 @@ const Query = {
         const user = await userRepository.fetchUserByUserId(userId as UUID, true);
         const receivedInvites = await user.getReceivedInvites();
         return receivedInvites;
-    }
+    },
+    receivedGroupInvites: async function receivedGroupInvites(_: unknown, __: unknown, context: UserContext): Promise<GroupInviteModel[]> {
+        const userId = context.user?.id;
+        if (!userId) {
+            throw new UnauthorizedError("Not authenticated");
+        }
 
+        const user = await userRepository.fetchUserByUserId(userId as UUID, true);
+        const receivedInvites = await user.getReceivedInvites();
+        return receivedInvites ?? [];
+    },
+    sentGroupInvites: async function sentGroupInvites(_: unknown, __: unknown, context: UserContext): Promise<GroupInviteModel[]> {
+        const userId = context.user?.id;
+        if (!userId) {
+            throw new UnauthorizedError("Not authenticated");
+        }
+
+        const user = await userRepository.fetchUserByUserId(userId as UUID, true);
+        const sentInvites = await user.getSentInvites();
+        return sentInvites ?? [];
+    }
 };
 
 const Mutation = {
@@ -82,6 +108,13 @@ const Mutation = {
             invitedUserId: invitedUser.id,
             inviterUserId: userId as UUID
         });
+
+        await pubsub.publish(GROUP_INVITE_ADDED, {
+            groupInviteAdded: groupInvite,
+            userId: invitedUser.id, // Pass the invited user's ID for filtering
+        });
+        console.log("Published groupInviteAdded for userId:", invitedUser.id);
+
         return groupInvite;
     },
 
@@ -125,6 +158,13 @@ const Mutation = {
                 }, { transaction });
             }
             await transaction.commit();
+
+            await pubsub.publish(GROUP_INVITE_RESPONDED, {
+                groupInviteResponded: groupInvite,
+                userId: groupInvite.inviterUserId,
+            });
+
+
             return groupInvite;
         } catch (error) {
             await transaction.rollback();
@@ -134,15 +174,44 @@ const Mutation = {
 
 };
 
+const Subscription = {
+    groupInviteAdded: {
+        subscribe: (_: any, { userId }: { userId: string; }) => {
+            return pubsub.asyncIterableIterator(GROUP_INVITE_ADDED);
+        },
+        resolve: (payload: any, args: any) => {
+            console.log("Resolving subscription:", payload, args);
+            if (payload.userId === args.userId) {
+                return payload.groupInviteAdded;
+            }
+            return null;
+        },
+    },
+    groupInviteResponded: {
+        subscribe: (_: any, { inviterUserId }: { inviterUserId: string; }) =>
+            pubsub.asyncIterableIterator(GROUP_INVITE_RESPONDED),
+        resolve: (payload: any, args: any) => {
+            if (payload.inviterUserId === args.inviterUserId) {
+                return payload.groupInviteResponse;
+            }
+            return null;
+        },
+    }
+};
+
+
 export const groupInviteResolvers = {
     Query: {
         groupInvites: Query.groupInvites,
-        myGroupInvites: Query.myGroupInvites
+        myGroupInvites: Query.myGroupInvites,
+        receivedGroupInvites: Query.receivedGroupInvites,
+        sentGroupInvites: Query.sentGroupInvites
     },
     Mutation: {
         inviteToGroup: Mutation.inviteToGroup,
         respondToGroupInvite: Mutation.respondToGroupInvite
     },
+    Subscription,
     GroupInvite: {
         group: async (parent: GroupInviteModel): Promise<GroupModel> => {
             return await parent.getGroup();

@@ -8,6 +8,11 @@ type GroupInvite {
   respondedAt: Date
 }
 
+type Subscription {
+  groupInviteAdded(userId: ID!): GroupInvite!
+  groupInviteResponded(inviterUserId: ID!): GroupInvite!
+}
+
 enum GroupInviteStatus {
   PENDING
   ACCEPTED
@@ -32,4 +37,7 @@ type Mutation {
 type Query {
   groupInvites(groupId: ID!): [GroupInvite!]!
   myGroupInvites: [GroupInvite!]!
+
+  receivedGroupInvites: [GroupInvite!]!
+  sentGroupInvites: [GroupInvite!]!
 }

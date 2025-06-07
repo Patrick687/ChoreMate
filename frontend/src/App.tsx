@@ -16,15 +16,18 @@ import AddChoreModal from './components/groups/groupDetails/AddChoreModal';
 import ErrorModal from './components/utils/error/ErrorModal';
 import ChoreDetailView from './components/chore/detailView/ChoreDetailView';
 import InviteMember from './components/groups/groupDetails/InviteMember';
+import GroupInviteListener from './components/wsListeners/GroupInviteListener';
 
 function App() {
   const { isOpen, mode, modalProps } = useSelector((state: RootState) => state.modal);
+  const user = useSelector((state: RootState) => state.auth.user);
   if (modalProps) {
     console.log("Modal Props:", modalProps);
   }
   const dispatch = useDispatch();
   return (
     <BrowserRouter>
+    {user?.id && <GroupInviteListener userId={user.id} />}
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<LandingPage />} />

@@ -1,25 +1,5 @@
 mutation InviteToGroup($args: InviteToGroupInput) {
   inviteToGroup(args: $args) {
-    status
-    respondedAt
-    inviterUser {
-      userName
-      lastName
-      id
-      firstName
-      email
-    }
-    invitedUser {
-      userName
-      lastName
-      id
-      firstName
-      email
-    }
-    id
-    group {
-      name
-      id
-    }
+    ...GroupInviteFields
   }
 }

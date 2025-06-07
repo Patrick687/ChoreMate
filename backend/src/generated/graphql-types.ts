@@ -209,6 +209,8 @@ export type Query = {
   groups: Array<Group>;
   me: Maybe<User>;
   myGroupInvites: Array<GroupInvite>;
+  receivedGroupInvites: Array<GroupInvite>;
+  sentGroupInvites: Array<GroupInvite>;
 };
 
 
@@ -234,6 +236,22 @@ export type QueryGroupInvitesArgs = {
 export type RespondToGroupInviteInput = {
   inviteId: Scalars['ID']['input'];
   response: GroupInviteStatus;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  groupInviteAdded: GroupInvite;
+  groupInviteResponded: GroupInvite;
+};
+
+
+export type SubscriptionGroupInviteAddedArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionGroupInviteRespondedArgs = {
+  inviterUserId: Scalars['ID']['input'];
 };
 
 export type UnassignChoreInput = {

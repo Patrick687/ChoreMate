@@ -39,3 +39,50 @@ query MyGroupInvites {
     respondedAt
   }
 }
+
+
+query ReceivedGroupInvites {
+  receivedGroupInvites {
+    createdAt
+    id
+    inviterUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    invitedUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    status
+    respondedAt
+  }
+}
+
+query SentGroupInvites {
+  sentGroupInvites {
+    createdAt
+    id
+    inviterUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    invitedUser {
+      id
+      userName
+      email
+      firstName
+      lastName
+    }
+    status
+    respondedAt
+  }
+}

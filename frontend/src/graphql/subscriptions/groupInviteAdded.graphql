@@ -1,0 +1,11 @@
+subscription GroupInviteAdded($userId: ID!) {
+  groupInviteAdded(userId: $userId) {
+    ...GroupInviteFields
+  }
+}
+
+subscription GroupInviteResponded($inviterUserId: ID!) {
+  groupInviteResponded(inviterUserId: $inviterUserId) {
+    ...GroupInviteFields
+  }
+}

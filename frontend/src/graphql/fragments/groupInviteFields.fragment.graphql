@@ -1,0 +1,25 @@
+fragment GroupInviteFields on GroupInvite {
+  __typename
+  id
+  group {
+    id
+    name
+  }
+  inviterUser {
+    id
+    userName
+    email
+    firstName
+    lastName
+  }
+  invitedUser {
+    id
+    userName
+    email
+    firstName
+    lastName
+  }
+  status
+  createdAt
+  respondedAt
+}
