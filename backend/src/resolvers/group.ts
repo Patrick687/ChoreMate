@@ -10,14 +10,15 @@ import { ChoreModel } from "../models/ChoresModel";
 import userRepository from "../repositories/auth/userRepository";
 import groupRepository from "../repositories/group/groupRepository";
 import validator from "validator";
+import { UserContext } from "../middleware/context";
 
 // Move the resolver function out of the object and give it a name
 async function groupsResolver(
     _: unknown,
     __: unknown,
-    context: { user: { id: UUID; }; }
+    context: UserContext
 ): Promise<GroupModel[]> {
-    const userId = context.user.id;
+    const userId = context.user?.id;
     if (!userId) {
         throw new UnauthorizedError(`Unauthorized. Please relog.`);
     }
@@ -35,9 +36,9 @@ async function groupsResolver(
 async function groupResolver(
     _: unknown,
     { args }: { args: QueryGroupArgs; },
-    context: { user: { id: UUID; }; }
+    context: UserContext
 ): Promise<GroupModel> {
-    const userId = context.user.id;
+    const userId = context.user?.id;
     if (!userId) {
         throw new UnauthorizedError(`Unauthorized`);
     }
@@ -52,7 +53,7 @@ async function groupResolver(
 }
 
 const groupMutations = {
-    createGroup: async (_: unknown, { args }: { args: CreateGroupInput; }) => {
+    createGroup: async (_: unknown, { args }: { args: CreateGroupInput; }, context: UserContext) => {
         const { name, createdByUserId } = args;
 
         const group = await GroupModel.create({
@@ -61,7 +62,7 @@ const groupMutations = {
         });
         return group;
     },
-    updateGroup: async (_: unknown, { args }: { args: UpdateGroupInput; }) => {
+    updateGroup: async (_: unknown, { args }: { args: UpdateGroupInput; }, context: UserContext) => {
         const group = await GroupModel.findByPk(args.groupId);
         if (!group) {
             throw new NotFoundError(`Group with ID ${args.groupId} not found`);
@@ -86,7 +87,7 @@ const groupMutations = {
         await group.save();
         return group;
     },
-    deleteGroup: async (_: unknown, { args }: { args: DeleteGroupInput; }) => {
+    deleteGroup: async (_: unknown, { args }: { args: DeleteGroupInput; }, context: UserContext) => {
         const group = await GroupModel.findByPk(args.id);
         if (!group) {
             throw new NotFoundError(`Group with ID ${args.id} not found`);

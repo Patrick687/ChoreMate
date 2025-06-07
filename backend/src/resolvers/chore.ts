@@ -11,6 +11,7 @@ import userRepository from "../repositories/auth/userRepository";
 import groupHelper from "../helpers/group/groupHelper";
 import { sequelize } from "../config/db";
 import { ChoreAssignment as ChoreAssignmentModel } from "../models/ChoreAssignmentsModel";
+import { UserContext } from "../middleware/context";
 const Query = {
     chore: async function chore(_: unknown, args: { id: string; }, context: { user?: { id: UUID; }; }): Promise<ChoreModel> {
         const { id: idInput } = args;
@@ -56,8 +57,8 @@ export const choreResolvers = {
         chores: Query.chores,
     },
     Mutation: {
-        createChore: async function createChore(_: unknown, args: { args: CreateChoreInput; }, context: { user?: { id: UUID; }; }): Promise<ChoreModel> {
-            const userId = context.user?.id;
+        createChore: async function createChore(_: unknown, args: { args: CreateChoreInput; }, context: UserContext): Promise<ChoreModel> {
+            const userId = context.user?.id as UUID | null;
             if (!userId) {
                 throw new UnauthorizedError("Not authenticated");
             }
@@ -112,7 +113,7 @@ export const choreResolvers = {
         updateChoreInfo: async function updateChoreInfo(
             _: unknown,
             args: { args: { choreId: string; userId: string; title?: string; description?: string; }; },
-            context: { user?: { id: UUID; }; }
+            context: UserContext
         ): Promise<ChoreModel> {
             const userId = context.user?.id;
             if (!userId) {
@@ -141,7 +142,7 @@ export const choreResolvers = {
         updateChoreDueDate: async function updateChoreDueDate(
             _: unknown,
             args: { args: { choreId: string; dueDate: string | null; }; },
-            context: { user?: { id: UUID; }; }
+            context: UserContext
         ): Promise<ChoreModel> {
             const userId = context.user?.id;
             if (!userId) {
@@ -188,7 +189,7 @@ export const choreResolvers = {
         updateChoreStatus: async function updateChoreStatus(
             _: unknown,
             args: { args: { choreId: string; status: ChoreStatus; }; },
-            context: { user?: { id: UUID; }; }
+            context: UserContext
         ): Promise<ChoreModel> {
             const userId = context.user?.id;
             if (!userId) {
@@ -217,7 +218,7 @@ export const choreResolvers = {
 
             return chore;
         },
-        assignChore: async function assignChore(_: unknown, args: { args: AssignChoreInput; }, context: { user?: { id: UUID; }; }): Promise<ChoreModel> {
+        assignChore: async function assignChore(_: unknown, args: { args: AssignChoreInput; }, context: UserContext): Promise<ChoreModel> {
             const userId = context.user?.id;
             if (!userId) {
                 throw new Error("Not authenticated");
@@ -271,7 +272,7 @@ export const choreResolvers = {
             }
         },
 
-        unassignChore: async function unassignChore(_: unknown, args: { args: { choreId: string; }; }, context: { user?: { id: UUID; }; }): Promise<ChoreModel> {
+        unassignChore: async function unassignChore(_: unknown, args: { args: { choreId: string; }; }, context: UserContext): Promise<ChoreModel> {
             const userId = context.user?.id;
             if (!userId) {
                 throw new Error("Not authenticated");

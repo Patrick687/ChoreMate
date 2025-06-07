@@ -1,9 +1,10 @@
+import { UserContext } from '../middleware/context';
 import { User } from '../models/UserModel';
 import { UnauthorizedError } from '../utils/error/customErrors';
 
 export const userResolvers = {
     Query: {
-        me: async (_parent: unknown, _args: unknown, context: { user?: { id: string; }; }) => {
+        me: async (_parent: unknown, _args: unknown, context: UserContext) => {
             if (!context.user) {
                 throw new UnauthorizedError('Not authenticated');
             }

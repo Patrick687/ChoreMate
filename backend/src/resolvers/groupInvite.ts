@@ -10,9 +10,10 @@ import userRepository from "../repositories/auth/userRepository";
 import groupHelper from "../helpers/group/groupHelper";
 import { GroupMember } from "../models/GroupMembersModel";
 import { sequelize } from "../config/db";
+import { UserContext } from "../middleware/context";
 
 const Query = {
-    groupInvites: async function groupInvites(_: unknown, args: { groupId: string; }, context: { user?: { id: string; }; }): Promise<GroupInviteModel[]> {
+    groupInvites: async function groupInvites(_: unknown, args: { groupId: string; }, context: UserContext): Promise<GroupInviteModel[]> {
         const groupIdInput = args.groupId;
         const userId = context.user?.id;
         if (!userId) {
@@ -26,7 +27,7 @@ const Query = {
         const groupInvites = await group.getGroupInvites();
         return groupInvites;
     },
-    myGroupInvites: async function myGroupInvites(_: unknown, __: unknown, context: { user?: { id: string; }; }): Promise<GroupInviteModel[]> {
+    myGroupInvites: async function myGroupInvites(_: unknown, __: unknown, context: UserContext): Promise<GroupInviteModel[]> {
         const userId = context.user?.id;
         if (!userId) {
             throw new UnauthorizedError("Not authenticated");
@@ -40,7 +41,7 @@ const Query = {
 };
 
 const Mutation = {
-    inviteToGroup: async function inviteToGroup(_: unknown, args: { args: InviteToGroupInput; }, context: { user?: { id: string; }; }): Promise<GroupInviteModel> {
+    inviteToGroup: async function inviteToGroup(_: unknown, args: { args: InviteToGroupInput; }, context: UserContext): Promise<GroupInviteModel> {
         //userId is the user who is inviting
         const userId = context.user?.id;
         if (!userId) {
@@ -84,7 +85,7 @@ const Mutation = {
         return groupInvite;
     },
 
-    respondToGroupInvite: async function respondToGroupInvite(_: unknown, args: { args: RespondToGroupInviteInput; }, context: { user?: { id: string; }; }): Promise<GroupInviteModel> {
+    respondToGroupInvite: async function respondToGroupInvite(_: unknown, args: { args: RespondToGroupInviteInput; }, context: UserContext): Promise<GroupInviteModel> {
         const userId = context.user?.id;
         if (!userId) {
             throw new UnauthorizedError("Not authenticated");

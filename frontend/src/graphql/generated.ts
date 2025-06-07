@@ -269,7 +269,6 @@ export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
-  groupInvites: Array<GroupInvite>;
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
   userName: Scalars['String']['output'];
@@ -302,7 +301,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string, groupInvites: Array<{ __typename?: 'GroupInvite', createdAt: any, id: string, respondedAt?: any | null, status: GroupInviteStatus, group: { __typename?: 'Group', id: string, name: string }, invitedUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, inviterUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } }> } } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
 
 export type SignupMutationVariables = Exact<{
   userName: Scalars['String']['input'];
@@ -510,30 +509,6 @@ export const LoginDocument = gql`
       email
       firstName
       lastName
-      groupInvites {
-        createdAt
-        group {
-          id
-          name
-        }
-        id
-        invitedUser {
-          id
-          userName
-          email
-          firstName
-          lastName
-        }
-        inviterUser {
-          id
-          userName
-          email
-          firstName
-          lastName
-        }
-        respondedAt
-        status
-      }
     }
     token
   }

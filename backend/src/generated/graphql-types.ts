@@ -266,7 +266,6 @@ export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
-  groupInvites: Array<GroupInvite>;
   id: Scalars['ID']['output'];
   lastName: Scalars['String']['output'];
   userName: Scalars['String']['output'];

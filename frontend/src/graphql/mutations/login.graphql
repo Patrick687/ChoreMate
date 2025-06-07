@@ -6,30 +6,6 @@ mutation Login($email: String!, $password: String!) {
       email
       firstName
       lastName
-      groupInvites {
-        createdAt
-        group {
-          id
-          name
-        }
-        id
-        invitedUser {
-          id
-          userName
-          email
-          firstName
-          lastName
-        }
-        inviterUser {
-          id
-          userName
-          email
-          firstName
-          lastName
-        }
-        respondedAt
-        status
-      }
     }
     token
   }

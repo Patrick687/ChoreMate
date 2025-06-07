@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import env from './env';
+import { fileURLToPath } from 'url';
 
 export const sequelize = new Sequelize(
     env.DB_NAME,
@@ -23,8 +24,9 @@ export async function connectToDatabase() {
     }
 }
 
-// If run directly, test the connection and close it
-if (require.main === module) {
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
+
+if (isMainModule) {
     connectToDatabase()
         .finally(async () => {
             await sequelize.close();
