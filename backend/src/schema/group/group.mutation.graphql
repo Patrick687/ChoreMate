@@ -1,0 +1,7 @@
+extend type Mutation {
+  createGroup(args: CreateGroupInput): Group!
+}
+
+input CreateGroupInput {
+  name: String!
+}

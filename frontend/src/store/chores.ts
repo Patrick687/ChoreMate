@@ -10,6 +10,9 @@ const initialState: ChoresState = {
     byGroupId: {},
 };
 
+export const fetchChoresAllGroups = createAsyncThunk<Chore[]
+
+
 const choresSlice = createSlice({
     name: "chores",
     initialState,

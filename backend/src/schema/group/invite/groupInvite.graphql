@@ -1,0 +1,17 @@
+type GroupInvite {
+  id: ID!
+
+  status: GroupInviteStatus!
+  createdAt: Date!
+  respondedAt: Date
+
+  group: Group!
+  inviterUser: User!
+  invitedUser: User!
+}
+
+enum GroupInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}

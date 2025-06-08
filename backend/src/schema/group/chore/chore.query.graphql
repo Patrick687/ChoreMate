@@ -1,0 +1,13 @@
+extend type Query {
+  getChoresByGroupId(args: GetChoresByGroupIdInput): [Chore!]!
+  getChoreByChoreId(args: GetChoreByChoreIdInput): Chore!
+}
+
+input GetChoresByGroupIdInput {
+  groupId: ID!
+}
+
+input GetChoreByChoreIdInput {
+  groupId: ID!
+  choreId: ID!
+}

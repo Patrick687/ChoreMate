@@ -16,7 +16,7 @@ export type Scalars = {
 };
 
 export type AssignChoreInput = {
-  assignedTo: InputMaybe<Scalars['ID']['input']>;
+  assignedToUserId: InputMaybe<Scalars['ID']['input']>;
   choreId: Scalars['ID']['input'];
 };
 
@@ -56,22 +56,26 @@ export enum ChoreStatus {
 
 export type CreateChoreInput = {
   description: InputMaybe<Scalars['String']['input']>;
+  dueDate: InputMaybe<Scalars['Date']['input']>;
   groupId: Scalars['ID']['input'];
-  isRecurring: Scalars['Boolean']['input'];
   title: Scalars['String']['input'];
 };
 
 export type CreateGroupInput = {
-  createdByUserId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
 };
 
-export type DeleteChoreInput = {
+export type GetChoreByChoreIdInput = {
   choreId: Scalars['ID']['input'];
+  groupId: Scalars['ID']['input'];
 };
 
-export type DeleteGroupInput = {
-  id: Scalars['ID']['input'];
+export type GetChoresByGroupIdInput = {
+  groupId: Scalars['ID']['input'];
+};
+
+export type GetGroupInvitesByGroupIdInput = {
+  groupId: Scalars['ID']['input'];
 };
 
 export type Group = {
@@ -80,7 +84,7 @@ export type Group = {
   createdAt: Scalars['Date']['output'];
   createdBy: User;
   groupInvites: Array<GroupInvite>;
-  groupMembers: Array<User>;
+  groupMembers: Array<GroupMember>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
 };
@@ -102,9 +106,20 @@ export enum GroupInviteStatus {
   Pending = 'PENDING'
 }
 
+export type GroupMember = {
+  __typename?: 'GroupMember';
+  joinedAt: Scalars['Date']['output'];
+  user: User;
+};
+
 export type InviteToGroupInput = {
   groupId: Scalars['ID']['input'];
   invitedUserName: Scalars['String']['input'];
+};
+
+export type LoginInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
 export type Mutation = {
@@ -112,17 +127,14 @@ export type Mutation = {
   assignChore: ChoreAssignment;
   createChore: Chore;
   createGroup: Group;
-  deleteChore: Scalars['Boolean']['output'];
-  deleteGroup: Scalars['Boolean']['output'];
   inviteToGroup: GroupInvite;
   login: AuthPayload;
   respondToGroupInvite: GroupInvite;
   signup: AuthPayload;
-  unassignChore: ChoreAssignment;
+  updateChoreDescription: Chore;
   updateChoreDueDate: Chore;
-  updateChoreInfo: Chore;
   updateChoreStatus: Chore;
-  updateGroup: Group;
+  updateChoreTitle: Chore;
 };
 
 
@@ -141,24 +153,13 @@ export type MutationCreateGroupArgs = {
 };
 
 
-export type MutationDeleteChoreArgs = {
-  args: InputMaybe<DeleteChoreInput>;
-};
-
-
-export type MutationDeleteGroupArgs = {
-  args: InputMaybe<DeleteGroupInput>;
-};
-
-
 export type MutationInviteToGroupArgs = {
   args: InputMaybe<InviteToGroupInput>;
 };
 
 
 export type MutationLoginArgs = {
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  args: InputMaybe<LoginInput>;
 };
 
 
@@ -168,16 +169,12 @@ export type MutationRespondToGroupInviteArgs = {
 
 
 export type MutationSignupArgs = {
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-  userName: Scalars['String']['input'];
+  args: InputMaybe<SignupInput>;
 };
 
 
-export type MutationUnassignChoreArgs = {
-  args: InputMaybe<UnassignChoreInput>;
+export type MutationUpdateChoreDescriptionArgs = {
+  args: InputMaybe<UpdateChoreDescriptionInput>;
 };
 
 
@@ -186,76 +183,62 @@ export type MutationUpdateChoreDueDateArgs = {
 };
 
 
-export type MutationUpdateChoreInfoArgs = {
-  args: InputMaybe<UpdateChoreInfoInput>;
-};
-
-
 export type MutationUpdateChoreStatusArgs = {
   args: InputMaybe<UpdateChoreStatusInput>;
 };
 
 
-export type MutationUpdateGroupArgs = {
-  args: InputMaybe<UpdateGroupInput>;
+export type MutationUpdateChoreTitleArgs = {
+  args: InputMaybe<UpdateChoreTitleInput>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  chore: Chore;
-  chores: Array<Chore>;
-  group: Group;
-  groupInvites: Array<GroupInvite>;
-  groups: Array<Group>;
-  me: Maybe<User>;
-  myGroupInvites: Array<GroupInvite>;
-  receivedGroupInvites: Array<GroupInvite>;
-  sentGroupInvites: Array<GroupInvite>;
+  getChoreByChoreId: Chore;
+  getChoresByGroupId: Array<Chore>;
+  getGroupInvitesByGroupId: Array<GroupInvite>;
+  getGroups: Array<Group>;
+  getMyReceivedGroupInvites: Array<GroupInvite>;
+  getMySentGroupInvites: Array<GroupInvite>;
 };
 
 
-export type QueryChoreArgs = {
-  id: Scalars['ID']['input'];
+export type QueryGetChoreByChoreIdArgs = {
+  args: InputMaybe<GetChoreByChoreIdInput>;
 };
 
 
-export type QueryChoresArgs = {
-  groupId: Scalars['ID']['input'];
+export type QueryGetChoresByGroupIdArgs = {
+  args: InputMaybe<GetChoresByGroupIdInput>;
 };
 
 
-export type QueryGroupArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryGroupInvitesArgs = {
-  groupId: Scalars['ID']['input'];
+export type QueryGetGroupInvitesByGroupIdArgs = {
+  args: InputMaybe<GetGroupInvitesByGroupIdInput>;
 };
 
 export type RespondToGroupInviteInput = {
   inviteId: Scalars['ID']['input'];
-  response: GroupInviteStatus;
+  inviteStatus: GroupInviteStatus;
+};
+
+export type SignupInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  userName: Scalars['String']['input'];
 };
 
 export type Subscription = {
   __typename?: 'Subscription';
-  groupInviteAdded: GroupInvite;
+  groupInviteCreated: GroupInvite;
   groupInviteResponded: GroupInvite;
 };
 
-
-export type SubscriptionGroupInviteAddedArgs = {
-  userId: Scalars['ID']['input'];
-};
-
-
-export type SubscriptionGroupInviteRespondedArgs = {
-  inviterUserId: Scalars['ID']['input'];
-};
-
-export type UnassignChoreInput = {
+export type UpdateChoreDescriptionInput = {
   choreId: Scalars['ID']['input'];
+  description: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateChoreDueDateInput = {
@@ -263,21 +246,14 @@ export type UpdateChoreDueDateInput = {
   dueDate: InputMaybe<Scalars['Date']['input']>;
 };
 
-export type UpdateChoreInfoInput = {
-  choreId: Scalars['ID']['input'];
-  description: InputMaybe<Scalars['String']['input']>;
-  title: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateChoreStatusInput = {
   choreId: Scalars['ID']['input'];
   status: ChoreStatus;
 };
 
-export type UpdateGroupInput = {
-  groupId: Scalars['ID']['input'];
-  name: InputMaybe<Scalars['String']['input']>;
-  userId: Scalars['ID']['input'];
+export type UpdateChoreTitleInput = {
+  choreId: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
 };
 
 export type User = {

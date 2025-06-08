@@ -1,0 +1,17 @@
+fragment GroupFields on Group {
+  id
+  name
+  createdBy {
+    ...UserFields
+  }
+  createdAt
+  groupMembers {
+    ...UserFields
+  }
+}
+
+
+fragment GroupSimpleFields on Group {
+  id
+  name
+}

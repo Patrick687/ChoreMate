@@ -36,8 +36,8 @@ ChoreModel.belongsTo(User, { foreignKey: 'createdBy', targetKey: 'id', as: CHORE
 export const USER_CHORES_CREATED_ALIAS = 'createdChores';
 UserModel.hasMany(Chore, { foreignKey: 'createdBy', sourceKey: 'id', as: USER_CHORES_CREATED_ALIAS });
 
-export const CHORE_ONE_TIME_CHORE_ALIAS = 'oneTimeChores';
-ChoreModel.hasMany(OneTimeChore, { foreignKey: 'choreId', sourceKey: 'id', as: CHORE_ONE_TIME_CHORE_ALIAS });
+export const CHORE_ONE_TIME_CHORE_ALIAS = 'oneTimeChore';
+ChoreModel.hasOne(OneTimeChore, { foreignKey: 'choreId', sourceKey: 'id', as: CHORE_ONE_TIME_CHORE_ALIAS });
 
 export const ONE_TIME_CHORE_CHORE_ALIAS = 'chore';
 OneTimeChoreModel.belongsTo(Chore, { foreignKey: 'choreId', targetKey: 'id', as: ONE_TIME_CHORE_CHORE_ALIAS });

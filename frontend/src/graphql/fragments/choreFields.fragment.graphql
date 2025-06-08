@@ -1,0 +1,22 @@
+fragment ChoreFields on Chore {
+  id
+  title
+  description
+  group {
+    ...GroupSimpleFields
+  }
+  createdAt
+  isRecurring
+  dueDate
+  status
+  assignment {
+    id
+    assignedTo {
+      ...UserFields
+    }
+    assignedBy {
+      ...UserFields
+    }
+    assignedAt
+  }
+}

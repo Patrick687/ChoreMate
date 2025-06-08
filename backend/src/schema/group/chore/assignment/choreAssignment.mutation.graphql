@@ -1,0 +1,8 @@
+extend type Mutation {
+  assignChore(args: AssignChoreInput): ChoreAssignment!
+}
+
+input AssignChoreInput {
+  choreId: ID!
+  assignedToUserId: ID
+}

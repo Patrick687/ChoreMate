@@ -292,6 +292,14 @@ export type User = {
   userName: Scalars['String']['output'];
 };
 
+export type UserFieldsFragment = { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string };
+
+export type ChoreFieldsFragment = { __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, dueDate?: any | null, status: ChoreStatus, group: { __typename?: 'Group', id: string, name: string }, assignment: { __typename?: 'ChoreAssignment', id: string, assignedAt: any, assignedTo?: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } | null, assignedBy?: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } | null } };
+
+export type GroupFieldsFragment = { __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }> };
+
+export type GroupSimpleFieldsFragment = { __typename?: 'Group', id: string, name: string };
+
 export type GroupInviteFieldsFragment = { __typename: 'GroupInvite', id: string, status: GroupInviteStatus, createdAt: any, respondedAt?: any | null, group: { __typename?: 'Group', id: string, name: string }, inviterUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, invitedUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } };
 
 export type CreateChoreMutationVariables = Exact<{
@@ -362,6 +370,13 @@ export type UpdateChoreStatusMutationVariables = Exact<{
 
 export type UpdateChoreStatusMutation = { __typename?: 'Mutation', updateChoreStatus: { __typename?: 'Chore', id: string, status: ChoreStatus } };
 
+export type GroupQueryVariables = Exact<{
+  groupId: Scalars['ID']['input'];
+}>;
+
+
+export type GroupQuery = { __typename?: 'Query', group: { __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }> } };
+
 export type MyGroupInvitesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -380,7 +395,7 @@ export type SentGroupInvitesQuery = { __typename?: 'Query', sentGroupInvites: Ar
 export type GroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }>, chores: Array<{ __typename?: 'Chore', id: string, title: string, description?: string | null, createdAt: any, isRecurring: boolean, dueDate?: any | null, status: ChoreStatus, group: { __typename?: 'Group', id: string, name: string, createdAt: any }, createdBy: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string }, assignment: { __typename?: 'ChoreAssignment', id: string, assignedAt: any, assignedTo?: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string } | null, assignedBy?: { __typename?: 'User', userName: string, lastName: string, id: string, firstName: string, email: string } | null } }>, groupInvites: Array<{ __typename?: 'GroupInvite', id: string, status: GroupInviteStatus, createdAt: any, respondedAt?: any | null, inviterUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, invitedUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } }> }> };
+export type GroupsQuery = { __typename?: 'Query', groups: Array<{ __typename?: 'Group', id: string, name: string, createdAt: any, createdBy: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, groupMembers: Array<{ __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }> }> };
 
 export type GroupInviteAddedSubscriptionVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -396,33 +411,78 @@ export type GroupInviteRespondedSubscriptionVariables = Exact<{
 
 export type GroupInviteRespondedSubscription = { __typename?: 'Subscription', groupInviteResponded: { __typename: 'GroupInvite', id: string, status: GroupInviteStatus, createdAt: any, respondedAt?: any | null, group: { __typename?: 'Group', id: string, name: string }, inviterUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string }, invitedUser: { __typename?: 'User', id: string, userName: string, email: string, firstName: string, lastName: string } } };
 
+export const GroupSimpleFieldsFragmentDoc = gql`
+    fragment GroupSimpleFields on Group {
+  id
+  name
+}
+    `;
+export const UserFieldsFragmentDoc = gql`
+    fragment UserFields on User {
+  id
+  userName
+  email
+  firstName
+  lastName
+}
+    `;
+export const ChoreFieldsFragmentDoc = gql`
+    fragment ChoreFields on Chore {
+  id
+  title
+  description
+  group {
+    ...GroupSimpleFields
+  }
+  createdAt
+  isRecurring
+  dueDate
+  status
+  assignment {
+    id
+    assignedTo {
+      ...UserFields
+    }
+    assignedBy {
+      ...UserFields
+    }
+    assignedAt
+  }
+}
+    ${GroupSimpleFieldsFragmentDoc}
+${UserFieldsFragmentDoc}`;
+export const GroupFieldsFragmentDoc = gql`
+    fragment GroupFields on Group {
+  id
+  name
+  createdBy {
+    ...UserFields
+  }
+  createdAt
+  groupMembers {
+    ...UserFields
+  }
+}
+    ${UserFieldsFragmentDoc}`;
 export const GroupInviteFieldsFragmentDoc = gql`
     fragment GroupInviteFields on GroupInvite {
   __typename
   id
   group {
-    id
-    name
+    ...GroupSimpleFields
   }
   inviterUser {
-    id
-    userName
-    email
-    firstName
-    lastName
+    ...UserFields
   }
   invitedUser {
-    id
-    userName
-    email
-    firstName
-    lastName
+    ...UserFields
   }
   status
   createdAt
   respondedAt
 }
-    `;
+    ${GroupSimpleFieldsFragmentDoc}
+${UserFieldsFragmentDoc}`;
 export const CreateChoreDocument = gql`
     mutation createChore($args: CreateChoreInput!) {
   createChore(args: $args) {
@@ -792,6 +852,46 @@ export function useUpdateChoreStatusMutation(baseOptions?: Apollo.MutationHookOp
 export type UpdateChoreStatusMutationHookResult = ReturnType<typeof useUpdateChoreStatusMutation>;
 export type UpdateChoreStatusMutationResult = Apollo.MutationResult<UpdateChoreStatusMutation>;
 export type UpdateChoreStatusMutationOptions = Apollo.BaseMutationOptions<UpdateChoreStatusMutation, UpdateChoreStatusMutationVariables>;
+export const GroupDocument = gql`
+    query Group($groupId: ID!) {
+  group(id: $groupId) {
+    ...GroupFields
+  }
+}
+    ${GroupFieldsFragmentDoc}`;
+
+/**
+ * __useGroupQuery__
+ *
+ * To run a query within a React component, call `useGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGroupQuery({
+ *   variables: {
+ *      groupId: // value for 'groupId'
+ *   },
+ * });
+ */
+export function useGroupQuery(baseOptions: Apollo.QueryHookOptions<GroupQuery, GroupQueryVariables> & ({ variables: GroupQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options);
+      }
+export function useGroupLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GroupQuery, GroupQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options);
+        }
+export function useGroupSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GroupQuery, GroupQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GroupQuery, GroupQueryVariables>(GroupDocument, options);
+        }
+export type GroupQueryHookResult = ReturnType<typeof useGroupQuery>;
+export type GroupLazyQueryHookResult = ReturnType<typeof useGroupLazyQuery>;
+export type GroupSuspenseQueryHookResult = ReturnType<typeof useGroupSuspenseQuery>;
+export type GroupQueryResult = Apollo.QueryResult<GroupQuery, GroupQueryVariables>;
 export const MyGroupInvitesDocument = gql`
     query MyGroupInvites {
   myGroupInvites {
@@ -982,85 +1082,10 @@ export type SentGroupInvitesQueryResult = Apollo.QueryResult<SentGroupInvitesQue
 export const GroupsDocument = gql`
     query Groups {
   groups {
-    id
-    name
-    createdBy {
-      id
-      userName
-      email
-      firstName
-      lastName
-    }
-    createdAt
-    groupMembers {
-      id
-      userName
-      email
-      firstName
-      lastName
-    }
-    chores {
-      id
-      title
-      description
-      group {
-        id
-        name
-        createdAt
-      }
-      createdAt
-      isRecurring
-      dueDate
-      status
-      createdBy {
-        userName
-        lastName
-        id
-        firstName
-        email
-      }
-      assignment {
-        id
-        assignedTo {
-          userName
-          lastName
-          id
-          firstName
-          email
-        }
-        assignedBy {
-          userName
-          lastName
-          id
-          firstName
-          email
-        }
-        assignedAt
-      }
-    }
-    groupInvites {
-      id
-      inviterUser {
-        id
-        userName
-        email
-        firstName
-        lastName
-      }
-      invitedUser {
-        id
-        userName
-        email
-        firstName
-        lastName
-      }
-      status
-      createdAt
-      respondedAt
-    }
+    ...GroupFields
   }
 }
-    `;
+    ${GroupFieldsFragmentDoc}`;
 
 /**
  * __useGroupsQuery__

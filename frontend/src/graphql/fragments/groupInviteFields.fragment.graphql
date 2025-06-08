@@ -2,22 +2,13 @@ fragment GroupInviteFields on GroupInvite {
   __typename
   id
   group {
-    id
-    name
+    ...GroupSimpleFields
   }
   inviterUser {
-    id
-    userName
-    email
-    firstName
-    lastName
+    ...UserFields
   }
   invitedUser {
-    id
-    userName
-    email
-    firstName
-    lastName
+    ...UserFields
   }
   status
   createdAt

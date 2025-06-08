@@ -5,7 +5,3 @@ type User {
   firstName: String!
   lastName: String!
 }
-
-type Query {
-  me: User
-}

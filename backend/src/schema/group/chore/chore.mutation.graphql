@@ -1,0 +1,34 @@
+extend type Mutation {
+  createChore(args: CreateChoreInput): Chore!
+  updateChoreTitle(args: UpdateChoreTitleInput): Chore!
+  updateChoreDescription(args: UpdateChoreDescriptionInput): Chore!
+  updateChoreDueDate(args: UpdateChoreDueDateInput): Chore!
+  updateChoreStatus(args: UpdateChoreStatusInput): Chore!
+}
+
+input CreateChoreInput {
+  title: String!
+  description: String
+  groupId: ID!
+  dueDate: Date
+}
+
+input UpdateChoreTitleInput {
+  choreId: ID!
+  title: String!
+}
+
+input UpdateChoreDescriptionInput {
+  choreId: ID!
+  description: String
+}
+
+input UpdateChoreDueDateInput {
+  choreId: ID!
+  dueDate: Date
+}
+
+input UpdateChoreStatusInput {
+  choreId: ID!
+  status: ChoreStatus!
+}

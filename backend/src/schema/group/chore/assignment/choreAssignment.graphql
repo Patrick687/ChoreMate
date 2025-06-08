@@ -1,0 +1,6 @@
+type ChoreAssignment {
+  id: ID!
+  assignedTo: User
+  assignedBy: User
+  assignedAt: Date!
+}

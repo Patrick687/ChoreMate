@@ -1,0 +1,17 @@
+extend type Mutation {
+    signup(args: SignupInput): AuthPayload!
+    login(args: LoginInput): AuthPayload!
+}
+
+input SignupInput {
+    userName: String!
+    email: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+}
+
+input LoginInput {
+    email: String!
+    password: String!
+}

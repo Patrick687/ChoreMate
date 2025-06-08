@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { User, USER_TABLE_NAME, UserModelAttributes } from "./UserModel";
 import { Group, GROUP_TABLE_NAME, GroupsModelAttributes } from "./GroupModel";
-import { BelongsToGetAssociationMixin, DataTypes, HasManyGetAssociationsMixin, HasOneCreateAssociationMixin, HasOneGetAssociationMixin, Model } from "sequelize";
+import { BelongsToGetAssociationMixin, DataTypes, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasOneCreateAssociationMixin, HasOneGetAssociationMixin, Model } from "sequelize";
 import { sequelize } from "../config/db";
 import { BadRequestError, UnauthorizedError } from "../utils/error/customErrors";
 import { GroupMemberModel } from "./GroupMembersModel";
@@ -35,7 +35,8 @@ export class Chore extends Model<ChoreModelAttributes, ChoreModelCreationAttribu
     // creator
     public getCreator!: BelongsToGetAssociationMixin<User>;
     // oneTimeChores
-    public getOneTimeChores!: HasManyGetAssociationsMixin<OneTimeChore>;
+    public getOneTimeChore!: HasOneGetAssociationMixin<OneTimeChore>;
+    public createOneTimeChore!: HasOneCreateAssociationMixin<OneTimeChore>;
     // assignments
     public createAssignment!: HasOneCreateAssociationMixin<ChoreAssignment>;
     public getAssignment!: HasOneGetAssociationMixin<ChoreAssignment>;

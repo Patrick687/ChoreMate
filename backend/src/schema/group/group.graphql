@@ -1,0 +1,11 @@
+scalar Date
+
+type Group {
+    id: ID!
+    name: String!
+    createdBy: User!
+    createdAt: Date!
+    groupMembers: [GroupMember!]!
+    chores: [Chore!]!
+    groupInvites: [GroupInvite!]!
+}

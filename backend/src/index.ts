@@ -3,7 +3,6 @@ import cors from 'cors';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { typeDefs } from './schema';
-import { resolvers } from './resolvers';
 import './models';
 import { connectToDatabase, sequelize } from './config/db';
 import { context, UserContext } from './middleware/context';
@@ -14,6 +13,7 @@ import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { makeExecutableSchema } from '@graphql-tools/schema';
+import { resolvers } from './resolvers';
 
 const app = express();
 app.use(cors());

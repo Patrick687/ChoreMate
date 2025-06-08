@@ -1,80 +1,114 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { GroupInviteStatus, ReceivedGroupInvitesDocument, SentGroupInvitesDocument, type GroupInvite, type GroupInviteAddedSubscription, type GroupInviteFieldsFragment } from "../graphql/generated";
+import { GroupInviteStatus, ReceivedGroupInvitesDocument, SentGroupInvitesDocument, type GroupInviteFieldsFragment, type GroupInviteAddedSubscription } from "../graphql/generated";
 import client from "../apollo/apolloClient";
 
+interface InviteStatusMap {
+    pending: GroupInviteFieldsFragment[];
+    accepted: GroupInviteFieldsFragment[];
+    declined: GroupInviteFieldsFragment[];
+}
+
 interface GroupInviteState {
-    received: GroupInviteFieldsFragment[];
-    sent: GroupInviteFieldsFragment[];
+    received: InviteStatusMap;
+    sent: InviteStatusMap;
     receivedLoading: boolean;
     receivedError: string | null;
     sentLoading: boolean;
     sentError: string | null;
 }
 
+const emptyStatusMap = (): InviteStatusMap => ({
+    pending: [],
+    accepted: [],
+    declined: [],
+});
+
 const initialState: GroupInviteState = {
-    received: [],
-    sent: [],
+    received: emptyStatusMap(),
+    sent: emptyStatusMap(),
     receivedError: null,
     receivedLoading: false,
     sentError: null,
     sentLoading: false,
+};
+
+function getStatusKey(status: GroupInviteStatus): keyof InviteStatusMap {
+    switch (status) {
+        case GroupInviteStatus.Pending: return "pending";
+        case GroupInviteStatus.Accepted: return "accepted";
+        case GroupInviteStatus.Declined: return "declined";
+        default: return "pending";
+    }
 }
 
-export const fetchSentGroupInvites = createAsyncThunk<GroupInviteFieldsFragment[], { userId: string}>(
+export const fetchSentGroupInvites = createAsyncThunk<GroupInviteFieldsFragment[], { userId: string }>(
     "groupInvites/fetchSentGroupInvites",
     async () => {
         const { data } = await client.query({
             query: SentGroupInvitesDocument,
             fetchPolicy: "network-only",
         });
-
-        // For now, I am going to filter out all non-pending invites
-        data.sentGroupInvites = data.sentGroupInvites.filter((invite: GroupInviteFieldsFragment) => {
-            return invite.status === GroupInviteStatus.Pending;
-        });
         return data.sentGroupInvites;
     }
-)
+);
 
-export const fetchReceivedGroupInvites = createAsyncThunk<GroupInviteFieldsFragment[], { userId: string}>(
+export const fetchReceivedGroupInvites = createAsyncThunk<GroupInviteFieldsFragment[], { userId: string }>(
     "groupInvites/fetchReceivedGroupInvites",
     async () => {
-
         const { data } = await client.query({
             query: ReceivedGroupInvitesDocument,
             fetchPolicy: "network-only",
         });
-
-        //For now, I am going to filter out all non-pending invites
-        data.receivedGroupInvites = data.receivedGroupInvites.filter((invite: GroupInviteFieldsFragment) => {
-            return invite.status === GroupInviteStatus.Pending;
-        });
-
         return data.receivedGroupInvites;
     }
 );
-
-
 
 const groupInvitesSlice = createSlice({
     name: "groupInvites",
     initialState,
     reducers: {
         addReceivedInvite: (state, action: { payload: GroupInviteAddedSubscription["groupInviteAdded"] }) => {
-            if(!state.received.some(invite => invite.id === action.payload.id)) {
-                state.received.push(action.payload);    
+            const invite = action.payload;
+            const statusKey = getStatusKey(invite.status);
+            if (!state.received[statusKey].some(i => i.id === invite.id)) {
+                state.received[statusKey].push(invite);
             }
         },
         removeReceivedInvite: (state, action: { payload: GroupInviteFieldsFragment['id'] }) => {
-            state.received = state.received.filter(invite => invite.id !== action.payload);
+            (Object.keys(state.received) as (keyof InviteStatusMap)[]).forEach(key => {
+                state.received[key] = state.received[key].filter(invite => invite.id !== action.payload);
+            });
         },
         addSentInvite: (state, action: { payload: GroupInviteFieldsFragment }) => {
-            if(!state.sent.some(invite => invite.id === action.payload.id)) {
-                state.sent.push(action.payload);
+            const invite = action.payload;
+            const statusKey = getStatusKey(invite.status);
+            if (!state.sent[statusKey].some(i => i.id === invite.id)) {
+                state.sent[statusKey].push(invite);
             }
         },
         removeSentInvite: (state, action: { payload: GroupInviteFieldsFragment['id'] }) => {
-            state.sent = state.sent.filter(invite => invite.id !== action.payload);
+            (Object.keys(state.sent) as (keyof InviteStatusMap)[]).forEach(key => {
+                state.sent[key] = state.sent[key].filter(invite => invite.id !== action.payload);
+            });
+        },
+        // Optional: handle status update (move between arrays)
+        updateReceivedInviteStatus: (state, action: { payload: GroupInviteFieldsFragment }) => {
+            const invite = action.payload;
+            // Remove from all
+            (Object.keys(state.received) as (keyof InviteStatusMap)[]).forEach(key => {
+                state.received[key] = state.received[key].filter(i => i.id !== invite.id);
+            });
+            // Add to new status
+            const statusKey = getStatusKey(invite.status);
+            state.received[statusKey].push(invite);
+        },
+        updateSentInviteStatus: (state, action: { payload: GroupInviteFieldsFragment }) => {
+            const invite = action.payload;
+            (Object.keys(state.sent) as (keyof InviteStatusMap)[]).forEach(key => {
+                state.sent[key] = state.sent[key].filter(i => i.id !== invite.id);
+            });
+            const statusKey = getStatusKey(invite.status);
+            state.sent[statusKey].push(invite);
         },
     },
     extraReducers: (builder) => {
@@ -86,7 +120,11 @@ const groupInvitesSlice = createSlice({
             })
             .addCase(fetchSentGroupInvites.fulfilled, (state, action) => {
                 state.sentLoading = false;
-                state.sent = action.payload;
+                state.sent = emptyStatusMap();
+                action.payload.forEach(invite => {
+                    const statusKey = getStatusKey(invite.status);
+                    state.sent[statusKey].push(invite);
+                });
             })
             .addCase(fetchSentGroupInvites.rejected, (state, action) => {
                 state.sentLoading = false;
@@ -100,19 +138,25 @@ const groupInvitesSlice = createSlice({
             })
             .addCase(fetchReceivedGroupInvites.fulfilled, (state, action) => {
                 state.receivedLoading = false;
-                state.received = action.payload;
+                state.received = emptyStatusMap();
+                action.payload.forEach(invite => {
+                    const statusKey = getStatusKey(invite.status);
+                    state.received[statusKey].push(invite);
+                });
             })
             .addCase(fetchReceivedGroupInvites.rejected, (state, action) => {
                 state.receivedLoading = false;
                 state.receivedError = action.error.message || "Failed to fetch received invites";
             });
     },
-})
+});
 
 export const {
     addReceivedInvite,
     removeReceivedInvite,
     addSentInvite,
     removeSentInvite,
+    updateReceivedInviteStatus,
+    updateSentInviteStatus,
 } = groupInvitesSlice.actions;
 export default groupInvitesSlice.reducer;

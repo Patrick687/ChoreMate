@@ -1,0 +1,14 @@
+extend type Mutation {
+  inviteToGroup(args: InviteToGroupInput): GroupInvite!
+  respondToGroupInvite(args: RespondToGroupInviteInput): GroupInvite!
+}
+
+input InviteToGroupInput {
+  groupId: ID!
+  invitedUserName: String!
+}
+
+input RespondToGroupInviteInput {
+  inviteId: ID!
+  inviteStatus: GroupInviteStatus!
+}

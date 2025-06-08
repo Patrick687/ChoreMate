@@ -1,0 +1,9 @@
+extend type Query {
+  getGroupInvitesByGroupId(args: GetGroupInvitesByGroupIdInput): [GroupInvite!]!
+  getMyReceivedGroupInvites: [GroupInvite!]!
+  getMySentGroupInvites: [GroupInvite!]!
+}
+
+input GetGroupInvitesByGroupIdInput {
+  groupId: ID!
+}

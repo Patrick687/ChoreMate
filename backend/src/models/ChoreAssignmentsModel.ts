@@ -11,7 +11,7 @@ export interface ChoreAssignmentModelAttributes {
     choreId: ChoreModelAttributes['id'];
     assignedTo: UserModelAttributes['id'] | null;
     assignedBy: UserModelAttributes['id'] | null;
-    assignedAt: Date;
+    assignedAt: Date | null;
 }
 
 export interface ChoreAssignmentModelCreationAttributes extends Omit<ChoreAssignmentModelAttributes, 'id' | 'assignedAt' | 'isCompleted' | 'completedAt'> { }
@@ -67,8 +67,8 @@ export const ChoreAssignmentModel = ChoreAssignment.init(
         },
         assignedAt: {
             type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
+            allowNull: true,
+            defaultValue: null,
         },
     },
     {

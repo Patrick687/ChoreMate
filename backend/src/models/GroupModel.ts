@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { User, USER_TABLE_NAME, UserModel, UserModelAttributes } from "./UserModel";
 import { sequelize } from "../config/db";
-import { BelongsToGetAssociationMixin, DataTypes, HasManyGetAssociationsMixin, Model, Optional } from "sequelize";
+import { BelongsToGetAssociationMixin, DataTypes, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, Model, Optional } from "sequelize";
 import { BadRequestError, NotFoundError } from "../utils/error/customErrors";
 import validator from "validator";
 import { GroupMember } from "./GroupMembersModel";
@@ -31,8 +31,10 @@ export class Group extends Model<GroupsModelAttributes, GroupsModelCreationAttri
     public getCreator!: BelongsToGetAssociationMixin<User>;
     // groupMembers
     public getGroupMembers!: HasManyGetAssociationsMixin<GroupMember>;
+    public createGroupMember!: HasManyCreateAssociationMixin<GroupMember>;
     // chores
     public getChores!: HasManyGetAssociationsMixin<Chore>;
+    public createChore!: HasManyCreateAssociationMixin<Chore>;
     // groupInvites
     public getGroupInvites!: HasManyGetAssociationsMixin<GroupInvite>;
 }

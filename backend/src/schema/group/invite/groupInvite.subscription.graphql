@@ -1,0 +1,4 @@
+extend type Subscription {
+  groupInviteCreated: GroupInvite!
+  groupInviteResponded: GroupInvite!
+}

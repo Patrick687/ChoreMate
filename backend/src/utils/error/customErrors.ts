@@ -37,3 +37,11 @@ export class InternalServerError extends Error {
         this.name = 'InternalServerError';
     }
 }
+
+export class NotImplementedError extends Error {
+    public code = 501;
+    constructor(message: string) {
+        super(message);
+        this.name = 'NotImplementedError';
+    }
+}

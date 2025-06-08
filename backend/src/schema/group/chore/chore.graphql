@@ -1,0 +1,21 @@
+type Chore {
+  id: ID!
+  title: String!
+  description: String
+  createdBy: User!
+  createdAt: Date!
+  isRecurring: Boolean!
+  dueDate: Date
+  
+  status: ChoreStatus!
+  
+  assignment: ChoreAssignment!
+
+  group: Group!
+}
+
+enum ChoreStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
