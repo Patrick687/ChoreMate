@@ -1,6 +1,5 @@
 import { Sequelize } from 'sequelize';
 import env from './env';
-import { fileURLToPath } from 'url';
 
 export const sequelize = new Sequelize(
     env.DB_NAME,
@@ -17,20 +16,9 @@ export const sequelize = new Sequelize(
 export async function connectToDatabase() {
     try {
         await sequelize.authenticate();
-        console.log('✅ Database connection has been established successfully.');
+        console.log(`✅ Database connection to ${sequelize.getDatabaseName()} has been established successfully.`);
     } catch (error) {
-        console.error('❌ Unable to connect to the database:', error);
+        console.error(`❌ Unable to connect to the database ${sequelize.getDatabaseName()}:`, error);
         process.exit(1);
     }
-}
-
-const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
-
-if (isMainModule) {
-    connectToDatabase()
-        .finally(async () => {
-            await sequelize.close();
-            console.log('🔌 Database connection closed.');
-            process.exit(0);
-        });
 }

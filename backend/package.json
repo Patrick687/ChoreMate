@@ -8,8 +8,9 @@
     "dev": "nodemon --watch src --ext ts,graphql --exec \"tsx src/index.ts\"",
     "debug": "node --inspect ./node_modules/.bin/tsx src/index.ts",
     "start": "tsx src/index.ts",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --runInBand",
     "codegen": "graphql-codegen --config ./src/config/codegen.ts",
-    "testDbConnection": "tsx src/config/db.ts",
+    "testDbConnection": "tsx src/utils/db/testDbConnection.ts",
     "seedData": "tsx src/data/seed.ts"
   },
   "keywords": [],
@@ -47,8 +48,10 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.29",
     "@types/uuid": "^10.0.0",
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   }

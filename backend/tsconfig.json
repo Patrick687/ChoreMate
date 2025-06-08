@@ -3,7 +3,6 @@
     "target": "es2021",
     "module": "esnext",
     "moduleResolution": "node",
-    "sourceMap": true,
     "rootDir": "./src",
     "esModuleInterop": true,
     "strict": true,
