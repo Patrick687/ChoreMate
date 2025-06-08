@@ -12,16 +12,19 @@ import { sequelize } from "../../config/db";
 import express, { Express } from "express";
 import cors from "cors";
 
-export async function startApolloServer(app?: Express) {
+export let apolloServer: ApolloServer<UserContext>;
+export let expressApp: Express;
+
+export async function startApolloServer() {
     // If no app is provided, create a new one
-    const expressApp = app || express();
+    expressApp = express();
     expressApp.use(cors());
     expressApp.use(express.json());
 
     // Create executable schema for graphql-ws
     const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-    const apolloServer = new ApolloServer<UserContext>({
+    apolloServer = new ApolloServer<UserContext>({
         schema,
         formatError: (err) => {
             const originalError = (err as any).originalError;

@@ -1,6 +1,5 @@
 import { connectToDatabase, sequelize } from "../../config/db";
 
-
 async function main() {
     await connectToDatabase();
     await sequelize.close();

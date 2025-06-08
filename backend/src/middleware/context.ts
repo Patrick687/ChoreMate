@@ -6,18 +6,20 @@ import { UUID } from 'crypto';
 import { User } from '../models/UserModel';
 
 export type UserContext = {
-    user: { id: UUID; };
+    user?: { id: UUID; };
 };
 
 export const context = async ({ req }: ExpressContextFunctionArgument): Promise<UserContext> => {
     const auth = req.headers.authorization || '';
     if (!auth.startsWith('Bearer ')) {
-        throw new UnauthorizedError('Authorization header required');
+        // No user, allow public access (for signup/login)
+        return {};
     }
     try {
         const payload = jwt.verify(auth.replace('Bearer ', ''), env.JWT_SECRET) as { id: string; };
         return { user: { id: payload.id as UUID } };
     } catch (e) {
+        // If the header is present but invalid, throw
         throw new UnauthorizedError('Unauthorized access. Please log in again.');
     }
 };

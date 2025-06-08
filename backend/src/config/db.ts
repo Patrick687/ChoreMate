@@ -16,6 +16,10 @@ export const sequelize = new Sequelize(
 export async function connectToDatabase() {
     try {
         await sequelize.authenticate();
+        if (env.NODE_ENV === 'test') {
+            await sequelize.sync({ force: true });
+            console.log('🧪 Database synced for testing.');
+        }
         console.log(`✅ Database connection to ${sequelize.getDatabaseName()} has been established successfully.`);
     } catch (error) {
         console.error(`❌ Unable to connect to the database ${sequelize.getDatabaseName()}:`, error);

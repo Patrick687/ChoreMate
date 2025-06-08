@@ -27,7 +27,7 @@ export const groupInviteCreated = {
         context: UserContext,
         _info: unknown
     ) => {
-        if (payload.userId === context.user.id) {
+        if (context.user && payload.userId === context.user.id) {
             return payload.groupInviteAdded;
         }
         return null;
@@ -47,7 +47,7 @@ export const groupInviteResponded = {
         if (payload.groupInviteResponded.status === GroupInviteStatus.Pending) {
             throw new InternalServerError("Cannot resolve a pending invite in the subscription.");
         }
-        if (payload.groupInviteResponded.inviterUserId === context.user.id) {
+        if (context.user && payload.groupInviteResponded.inviterUserId === context.user.id) {
             return payload.groupInviteResponded;
         }
         return null;
